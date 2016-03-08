@@ -299,7 +299,8 @@ define(["d", "Tile"], function(d, Tile) {
 	 */
 	Level.prototype.setHeroPosition = function(position) {
 
-		this._map[position.y][position.x].isHero = true;
+		this._map[this._position.x][this._position.y].isHero = false;
+		this._map[position.x][position.y].isHero = true;
 		this._position = {
 			x: position.x,
 			y: position.y
@@ -309,20 +310,65 @@ define(["d", "Tile"], function(d, Tile) {
 
 	Level.prototype.checkVisible = function(overview) {
 
-		var tales = [];
-
 		for (var i = this._position.y - overview; i < this._position.y + overview; i++) {
 			for (var g = this._position.x - overview; g < this._position.x + overview; g++) {
-				if ((i >= 0) && (i < this._sizes.height) && (g >= 0) && (g < this._sizes.width)) {
+				if ((i >= 0) && (i <= this._sizes.height) && (g >= 0) && (g <= this._sizes.width)) {
 					var t = this._map[i][g];
-					t.tag = 0;
+					/*if (t.tag == 1) {
+						t.tag = 0;
+						continue;
+					}*/
 					t.visible = true;
-					tales.push(t);
+					/*if ((Math.abs(g - this._position.y) < 2) && (Math.abs(i - this._position.x) < 2)) {
+						t.visible = true;
+						t.inMind = true;
+						t.tag = 0;
+					} else {
+						var line1 = this._drawLine(i, g, this._position.x, this._position.y),
+							line2 = this._drawLine(this._position.x, this._position.y, i, g);
+						t.visible = line1.every(function(point) {
+							return this._map[point[0]][point[1]].passability;
+						}, this) || line2.every(function(point) {
+							return this._map[point[0]][point[1]].passability;
+						}, this);
+						if (t.visible) t.inMind = true;
+					}*/
 				}
 			}
 		}
+	};
 
-		
+	Level.prototype._drawLine = function(x1, y1, x2, y2) {
+
+		var deltaX = Math.abs(x2 - x1),
+			deltaY = Math.abs(y2 - y1),
+			signX = x1 < x2 ? 1 : -1,
+			signY = y1 < y2 ? 1 : -1,
+			error = deltaX - deltaY,
+			result = [
+				// [x2, y2]
+			];
+
+		while ((x1 != x2) || (y1 != y2)) {
+
+			if (error * 2 > -deltaY) {
+				error -= deltaY;
+				x1 += signX;
+			} else if (error * 2 < deltaX) {
+				error += deltaX;
+				y1 += signY;
+			}
+			result.push([x1, y1]);
+
+		}
+
+		return result;
+
+	};
+
+	Level.prototype.isPassability = function(x0, y0) {
+
+		return this._map[x0][y0].passability;
 
 	};
 

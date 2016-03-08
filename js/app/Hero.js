@@ -9,7 +9,7 @@ define(function() {
 			y: 1
 		};
 
-		this.overview = 10;
+		this.overview = 30;
 
 	}
 
