@@ -299,12 +299,13 @@ define(["d", "Tile"], function(d, Tile) {
 	 */
 	Level.prototype.setHeroPosition = function(position) {
 
-		this._map[this._position.x][this._position.y].isHero = false;
-		this._map[position.x][position.y].isHero = true;
+		this._map[this._position.y][this._position.x].isHero = false;
+		this._map[position.y][position.x].isHero = true;
 		this._position = {
 			x: position.x,
 			y: position.y
 		};
+		console.log(this._position);
 
 	};
 
@@ -312,27 +313,30 @@ define(["d", "Tile"], function(d, Tile) {
 
 		for (var i = this._position.y - overview; i < this._position.y + overview; i++) {
 			for (var g = this._position.x - overview; g < this._position.x + overview; g++) {
-				if ((i >= 0) && (i <= this._sizes.height) && (g >= 0) && (g <= this._sizes.width)) {
+				if ((i >= 0) && (i < this._sizes.height) && (g >= 0) && (g < this._sizes.width)) {
 					var t = this._map[i][g];
 					/*if (t.tag == 1) {
 						t.tag = 0;
 						continue;
 					}*/
-					t.visible = true;
-					/*if ((Math.abs(g - this._position.y) < 2) && (Math.abs(i - this._position.x) < 2)) {
+					t.visible = false;
+					if ((Math.abs(i - this._position.y) < 2) && (Math.abs(g - this._position.x) < 2)) {
 						t.visible = true;
 						t.inMind = true;
 						t.tag = 0;
 					} else {
+
 						var line1 = this._drawLine(i, g, this._position.x, this._position.y),
 							line2 = this._drawLine(this._position.x, this._position.y, i, g);
+
 						t.visible = line1.every(function(point) {
-							return this._map[point[0]][point[1]].passability;
+							return this._map[point[1]][point[0]].passability;
 						}, this) || line2.every(function(point) {
-							return this._map[point[0]][point[1]].passability;
+							return this._map[point[1]][point[0]].passability;
 						}, this);
+
 						if (t.visible) t.inMind = true;
-					}*/
+					}
 				}
 			}
 		}
@@ -344,17 +348,21 @@ define(["d", "Tile"], function(d, Tile) {
 			deltaY = Math.abs(y2 - y1),
 			signX = x1 < x2 ? 1 : -1,
 			signY = y1 < y2 ? 1 : -1,
-			error = deltaX - deltaY,
+			error = (deltaX > deltaY ? deltaX : -deltaY) / 2,
+			error2,
 			result = [
 				// [x2, y2]
 			];
 
 		while ((x1 != x2) || (y1 != y2)) {
 
-			if (error * 2 > -deltaY) {
+			error2 = error;
+
+			if (error2 > -deltaX) {
 				error -= deltaY;
 				x1 += signX;
-			} else if (error * 2 < deltaX) {
+			}
+			if (error2 < deltaY) {
 				error += deltaX;
 				y1 += signY;
 			}
@@ -368,7 +376,7 @@ define(["d", "Tile"], function(d, Tile) {
 
 	Level.prototype.isPassability = function(x0, y0) {
 
-		return this._map[x0][y0].passability;
+		return this._map[y0][x0].passability;
 
 	};
 
@@ -382,16 +390,18 @@ define(["d", "Tile"], function(d, Tile) {
 			scrHeight = Math.ceil(element.clientHeight / this._charHeight),
 			scrHalfWidth = ~~(scrWidth / 2),
 			scrHalfHeight = ~~(scrHeight / 2),
+			minX = this._position.x - scrHalfWidth,
+			maxX = this._position.x + scrHalfWidth,
+			minY = this._position.y - scrHalfHeight,
+			maxY = this._position.y + scrHalfHeight,
 			text = "";
 
-		for (var i = -scrHalfHeight; i < scrHalfHeight; i++) {
-			for (var g = -scrHalfWidth; g < scrHalfWidth; g++) {
-				var mapX = g + this._position.x,
-					mapY = i + this._position.y;
-				if ((mapY < 0) || (mapY >= this._sizes.height) || (mapX < 0) || (mapX >= this._sizes.width)) {
+		for (var i = minY; i < maxY; i++) {
+			for (var g = minX; g < maxX; g++) {
+				if ((i < 0) || (i >= this._sizes.height) || (g < 0) || (g >= this._sizes.width)) {
 					text += "&nbsp;";
 				} else {
-					text += this._map[mapX][mapY].getText();
+					text += this._map[i][g].getText();
 				}
 			}
 			text += "<br>";
