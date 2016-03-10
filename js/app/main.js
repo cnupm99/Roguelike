@@ -66,7 +66,9 @@ define(["d", "Level", "Hero"], function(d, Level, Hero) {
 				h.position.x = x1;
 				h.position.y = y1;
 				l.setHeroPosition(h.position);
+				console.time("visible");
 				l.checkVisible(h.overview);
+				console.timeEnd("visible");
 			}
 
 		}

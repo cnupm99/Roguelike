@@ -305,7 +305,6 @@ define(["d", "Tile"], function(d, Tile) {
 			x: position.x,
 			y: position.y
 		};
-		console.log(this._position);
 
 	};
 
@@ -326,9 +325,11 @@ define(["d", "Tile"], function(d, Tile) {
 						t.tag = 0;
 					} else {
 
-						var line1 = this._drawLine(i, g, this._position.x, this._position.y),
-							line2 = this._drawLine(this._position.x, this._position.y, i, g);
+						var line1 = this._drawLine(g, i, this._position.x, this._position.y),
+							line2 = this._drawLine(this._position.x, this._position.y, g, i);
 
+						line1.shift();
+						
 						t.visible = line1.every(function(point) {
 							return this._map[point[1]][point[0]].passability;
 						}, this) || line2.every(function(point) {
@@ -342,32 +343,27 @@ define(["d", "Tile"], function(d, Tile) {
 		}
 	};
 
-	Level.prototype._drawLine = function(x1, y1, x2, y2) {
+	Level.prototype._drawLine = function(x0, y0, x1, y1) {
 
-		var deltaX = Math.abs(x2 - x1),
-			deltaY = Math.abs(y2 - y1),
-			signX = x1 < x2 ? 1 : -1,
-			signY = y1 < y2 ? 1 : -1,
-			error = (deltaX > deltaY ? deltaX : -deltaY) / 2,
-			error2,
-			result = [
-				// [x2, y2]
-			];
+		var dx = Math.abs(x1 - x0),
+			sx = x0 < x1 ? 1 : -1,
+			dy = Math.abs(y1 - y0),
+			sy = y0 < y1 ? 1 : -1,
+			err = dx > dy ? dx : -dy,
+			result = [],
+			e2;
 
-		while ((x1 != x2) || (y1 != y2)) {
-
-			error2 = error;
-
-			if (error2 > -deltaX) {
-				error -= deltaY;
-				x1 += signX;
+		while (x0 != x1 || y0 != y1) {
+			result.push([x0, y0]);
+			e2 = err;
+			if (e2 > -dx * 2) {
+				err -= dy;
+				x0 += sx;
 			}
-			if (error2 < deltaY) {
-				error += deltaX;
-				y1 += signY;
+			if (e2 < dy * 2) {
+				err += dx;
+				y0 += sy;
 			}
-			result.push([x1, y1]);
-
 		}
 
 		return result;

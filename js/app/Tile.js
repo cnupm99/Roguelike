@@ -46,7 +46,7 @@ define(function() {
 				this._visibleColor = "#FFF";
 				this._shadowColor = "#AAA";
 				this._shadowMergeColor = "#999";
-				this._inMindColor = "#555";
+				this._inMindColor = "#222";
 				this.passability = false;
 				break;
 			case 2:
@@ -54,7 +54,7 @@ define(function() {
 				this._visibleColor = "#FFF";
 				this._shadowColor = "#AAA";
 				this._shadowMergeColor = "#999";
-				this._inMindColor = "#555";
+				this._inMindColor = "#222";
 				this.passability = true;
 				break;
 		}
