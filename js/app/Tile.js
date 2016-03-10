@@ -44,16 +44,16 @@ define(function() {
 			case 1:
 				this._represent = "#";
 				this._visibleColor = "#FFF";
-				this._shadowColor = "#AAA";
-				this._shadowMergeColor = "#999";
+				this._shadowColor = "#777";
+				this._shadowMergeColor = "#888";
 				this._inMindColor = "#222";
 				this.passability = false;
 				break;
 			case 2:
 				this._represent = ".";
 				this._visibleColor = "#FFF";
-				this._shadowColor = "#AAA";
-				this._shadowMergeColor = "#999";
+				this._shadowColor = "#777";
+				this._shadowMergeColor = "#888";
 				this._inMindColor = "#222";
 				this.passability = true;
 				break;

@@ -308,17 +308,14 @@ define(["d", "Tile"], function(d, Tile) {
 
 	};
 
-	Level.prototype.checkVisible = function(overview) {
+	Level.prototype.checkVisible = function(overview, shadow) {
 
 		for (var i = this._position.y - overview; i < this._position.y + overview; i++) {
 			for (var g = this._position.x - overview; g < this._position.x + overview; g++) {
 				if ((i >= 0) && (i < this._sizes.height) && (g >= 0) && (g < this._sizes.width)) {
 					var t = this._map[i][g];
-					/*if (t.tag == 1) {
-						t.tag = 0;
-						continue;
-					}*/
 					t.visible = false;
+					t.inShadow = false;
 					if ((Math.abs(i - this._position.y) < 2) && (Math.abs(g - this._position.x) < 2)) {
 						t.visible = true;
 						t.inMind = true;
@@ -336,7 +333,13 @@ define(["d", "Tile"], function(d, Tile) {
 							return this._map[point[1]][point[0]].passability;
 						}, this);
 
-						if (t.visible) t.inMind = true;
+						if (t.visible) {
+							t.inMind = true;
+							if(line2.length >= shadow){
+								t.visible = false;
+								t.inShadow = true;
+							}
+						}
 					}
 				}
 			}

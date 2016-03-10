@@ -14,7 +14,7 @@ define(["d", "Level", "Hero"], function(d, Level, Hero) {
 
 	var l = new Level();
 	l.setHeroPosition(h.position);
-	l.checkVisible(h.overview);
+	l.checkVisible(h.overview, h.shadow);
 	drawField();
 
 	document.body.addEventListener("keypress", onKeyPress);
@@ -67,7 +67,7 @@ define(["d", "Level", "Hero"], function(d, Level, Hero) {
 				h.position.y = y1;
 				l.setHeroPosition(h.position);
 				console.time("visible");
-				l.checkVisible(h.overview);
+				l.checkVisible(h.overview, h.shadow);
 				console.timeEnd("visible");
 			}
 
