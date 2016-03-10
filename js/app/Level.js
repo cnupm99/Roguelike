@@ -308,7 +308,7 @@ define(["d", "Tile"], function(d, Tile) {
 
 	};
 
-	Level.prototype.checkVisible = function(overview, shadow) {
+	Level.prototype.checkVisible = function(overview, shadow, side) {
 
 		for (var i = this._position.y - overview; i < this._position.y + overview; i++) {
 			for (var g = this._position.x - overview; g < this._position.x + overview; g++) {
@@ -316,6 +316,37 @@ define(["d", "Tile"], function(d, Tile) {
 					var t = this._map[i][g];
 					t.visible = false;
 					t.inShadow = false;
+
+					var sideVisible = false;
+					switch (side) {
+						case 0:
+							sideVisible = i <= this._position.y;
+							break;
+						case 1:
+							sideVisible = g <= -i;
+							break;
+						case 2:
+							sideVisible = g >= this._position.x;
+							break;
+						case 3:
+							sideVisible = g >= -i;
+							break;
+						case 4:
+							sideVisible = i >= this._position.y;
+							break;
+						case 5:
+							sideVisible = -g <= i;
+							break;
+						case 6:
+							sideVisible = g <= this._position.x;
+							break;
+						case 7:
+							sideVisible = -g >= i;
+							break;
+					}
+					if (!sideVisible) continue;
+
+
 					if ((Math.abs(i - this._position.y) < 2) && (Math.abs(g - this._position.x) < 2)) {
 						t.visible = true;
 						t.inMind = true;
@@ -326,7 +357,7 @@ define(["d", "Tile"], function(d, Tile) {
 							line2 = this._drawLine(this._position.x, this._position.y, g, i);
 
 						line1.shift();
-						
+
 						t.visible = line1.every(function(point) {
 							return this._map[point[1]][point[0]].passability;
 						}, this) || line2.every(function(point) {
@@ -335,7 +366,7 @@ define(["d", "Tile"], function(d, Tile) {
 
 						if (t.visible) {
 							t.inMind = true;
-							if(line2.length >= shadow){
+							if (line2.length >= shadow) {
 								t.visible = false;
 								t.inShadow = true;
 							}

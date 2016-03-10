@@ -11,6 +11,7 @@ define(function() {
 
 		this.overview = 30;
 		this.shadow = 5;
+		this.side = 3;
 
 	}
 

@@ -67,10 +67,14 @@ define(function() {
 	 */
 	Tile.prototype.getText = function() {
 
-		if(this.isHero) return "<font color='" + this._heroColor + "'>@</font>";
-		if(this.visible) return "<font color='" + this._visibleColor + "'>" + this._represent + "</font>";
-		if(this.inShadow) return "<font color='" + this._shadowColor + "'>" + this._represent + "</font>";
-		if(this.inMind) return "<font color='" + this._inMindColor + "'>" + this._represent + "</font>";
+		if (this.isHero) return "<font color='" + this._heroColor + "'>@</font>";
+		if (this.visible) return "<font color='" + this._visibleColor + "'>" + this._represent + "</font>";
+		if (this.inShadow) return "<font color='" + this._shadowColor + "'>" + this._represent + "</font>";
+		/*{
+			if (Math.random() * 100 < 50) return "<font color='" + this._shadowColor + "'>" + this._represent + "</font>"
+			else return "<font color='" + this._shadowMergeColor + "'>" + this._represent + "</font>";
+		}*/
+		if (this.inMind) return "<font color='" + this._inMindColor + "'>" + this._represent + "</font>";
 		return "&nbsp;";
 
 	};
