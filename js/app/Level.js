@@ -315,21 +315,17 @@ define(["d", "Tile"], function(d, Tile) {
 			minX = this._position.x - overview,
 			maxX = this._position.x + overview,
 			checkSide = side % 2 != 0,
-			sign1 = side < 5 ? 1 : -1,
-			sign2 = (side == 1 || side == 7) ? 1 : -1,
+			sign1 = (side == 1 || side == 5) ? 1 : -1,
+			sign2 = (side == 5 || side == 7),
 			sign3 = (side == 0 || side == 4) ? this._position.y : this._position.x,
+			sign4 = (side == 4 || side == 2) ? 1 : -1;
 
-		/*if (minX < 0) minX = 0;
+		if (minX < 0) minX = 0;
 		if (minY < 0) minY = 0;
 		if (maxX > this._sizes.width) maxX = this._sizes.width;
-		if (maxY > this._sizes.height) maxY = this._sizes.height;*/
+		if (maxY > this._sizes.height) maxY = this._sizes.height;
 
-		/*if (side == 0) maxY = this._position.y;
-		if (side == 2) minX = this._position.x;
-		if (side == 4) minY = this._position.y;
-		if (side == 6) maxX = this._position.x;
-
-		console.log(minY);*/
+		console.log(this._position, side);
 
 		for (var i = minY; i < maxY; i++) {
 			for (var g = minX; g < maxX; g++) {
@@ -338,45 +334,29 @@ define(["d", "Tile"], function(d, Tile) {
 				t.visible = false;
 				t.inShadow = false;
 
-				if ((x < 0) || (y < 0) || (x > this._sizes.width) || (y > this._sizes.height)) continue;
-
 				if (checkSide) {
 
-					var a = sign1 * (g - this._position.y),
-						b = sign2 * (i - this._position.x),
-						sideVisible = a >= b;
+					var a = g - this._position.x,
+						b = sign1 * (i - this._position.y),
+						sideVisible = sign2 ? a <= b : a >= b;
 
 					if (!sideVisible) continue;
 
 				} else {
 
-					var a = (side == 0 || side == 4) : this._position.y : this._position.x,
+					var a = (side == 2 || side == 6) ? g : i;
+					sideVisible = sign4 * a >= sign4 * sign3;
 
+					if (!sideVisible) continue;
 
 				}
-
-				/*var sideVisible = false;
-				switch (side) {
-					case 1:
-						sideVisible = g >= (this._position.y - this._position.x + i);
-						break;
-					case 3:
-						sideVisible = g >= (this._position.y + this._position.x - i);
-						break;
-					case 5:
-						sideVisible = g <= (this._position.y - this._position.x + i);
-						break;
-					case 7:
-						sideVisible = g <= (this._position.x + this._position.y - i);
-						break;
-				}
-				if (!sideVisible) continue;*/
-
 
 				if ((Math.abs(i - this._position.y) < 2) && (Math.abs(g - this._position.x) < 2)) {
+					
 					t.visible = true;
 					t.inMind = true;
 					t.tag = 0;
+
 				} else {
 
 					var line1 = this._drawLine(g, i, this._position.x, this._position.y),
@@ -391,11 +371,13 @@ define(["d", "Tile"], function(d, Tile) {
 					}, this);
 
 					if (t.visible) {
+						
 						t.inMind = true;
 						if (line2.length >= shadow) {
 							t.visible = false;
 							t.inShadow = true;
 						}
+						
 					}
 				}
 			}
