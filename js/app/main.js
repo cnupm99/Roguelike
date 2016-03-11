@@ -31,34 +31,50 @@ define(["d", "Level", "Hero"], function(d, Level, Hero) {
 
 			switch (key) {
 				case 49:
-					x1--;
-					y1++;
+					if (h.side == 5) {
+						x1--;
+						y1++;
+					} else h.side = 5;
 					break;
 				case 50:
-					y1++;
+					if (h.side == 4) {
+						y1++;
+					} else h.side = 4;
 					break;
 				case 51:
-					x1++;
-					y1++;
+					if (h.side == 3) {
+						x1++;
+						y1++;
+					} else h.side = 3;
 					break;
 				case 52:
-					x1--;
+					if (h.side == 6) {
+						x1--;
+					} else h.side = 6;
 					break;
 				case 53:
 					break;
 				case 54:
-					x1++;
+					if (h.side == 2) {
+						x1++;
+					} else h.side = 2;
 					break;
 				case 55:
-					x1--;
-					y1--;
+					if (h.side == 7) {
+						x1--;
+						y1--;
+					} else h.side = 7;
 					break;
 				case 56:
-					y1--;
+					if (h.side == 0) {
+						y1--;
+					} else h.side = 0;
 					break;
 				case 57:
-					x1++;
-					y1--;
+					if (h.side == 1) {
+						x1++;
+						y1--;
+					} else h.side = 1;
 					break;
 			}
 

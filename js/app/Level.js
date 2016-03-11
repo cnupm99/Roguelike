@@ -323,25 +323,25 @@ define(["d", "Tile"], function(d, Tile) {
 							sideVisible = i <= this._position.y;
 							break;
 						case 1:
-							sideVisible = g <= -i;
+							sideVisible = g >= (this._position.y - this._position.x + i);
 							break;
 						case 2:
 							sideVisible = g >= this._position.x;
 							break;
 						case 3:
-							sideVisible = g >= -i;
+							sideVisible = g >= (this._position.y + this._position.x - i);
 							break;
 						case 4:
 							sideVisible = i >= this._position.y;
 							break;
 						case 5:
-							sideVisible = -g <= i;
+							sideVisible = g <= (this._position.y - this._position.x + i);
 							break;
 						case 6:
 							sideVisible = g <= this._position.x;
 							break;
 						case 7:
-							sideVisible = -g >= i;
+							sideVisible = g <= (this._position.x + this._position.y - i);
 							break;
 					}
 					if (!sideVisible) continue;
