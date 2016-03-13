@@ -9,8 +9,8 @@ define(function() {
 			y: 1
 		};
 
-		this.overview = 30;
-		this.shadow = 5;
+		this.overview = 10;
+		this.shadow = 20;
 		this.side = 3;
 
 	}

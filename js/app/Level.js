@@ -310,10 +310,10 @@ define(["d", "Tile"], function(d, Tile) {
 
 	Level.prototype.checkVisible = function(overview, shadow, side) {
 
-		var minY = this._position.y - overview,
-			maxY = this._position.y + overview,
-			minX = this._position.x - overview,
-			maxX = this._position.x + overview,
+		var minY = this._position.y - shadow,
+			maxY = this._position.y + shadow,
+			minX = this._position.x - shadow,
+			maxX = this._position.x + shadow,
 			checkSide = side % 2 != 0,
 			sign1 = (side == 1 || side == 5) ? 1 : -1,
 			sign2 = (side == 5 || side == 7),
@@ -325,12 +325,16 @@ define(["d", "Tile"], function(d, Tile) {
 		if (maxX > this._sizes.width) maxX = this._sizes.width;
 		if (maxY > this._sizes.height) maxY = this._sizes.height;
 
-		console.log(this._position, side);
+		// console.log(this._position, side);
 
 		for (var i = minY; i < maxY; i++) {
 			for (var g = minX; g < maxX; g++) {
 
-				var t = this._map[i][g];
+				var x = g - this._position.x,
+					y = i - this._position.y,
+					quarter,
+					t = this._map[i][g];
+
 				t.visible = false;
 				t.inShadow = false;
 
@@ -342,6 +346,9 @@ define(["d", "Tile"], function(d, Tile) {
 
 					if (!sideVisible) continue;
 
+					quarter = (side == 1 && x >= 0 && y <= 0) || (side == 3 && x >= 0 && y >= 0) || (side == 5 && x <= 0 && y >= 0) || (side == 7 && x <= 0 && y <= 0);
+					// quarter = x > 0 ? y > 0 ? 3 : 1 : y > 0 ? 5 : 7;
+
 				} else {
 
 					var a = (side == 2 || side == 6) ? g : i;
@@ -349,10 +356,13 @@ define(["d", "Tile"], function(d, Tile) {
 
 					if (!sideVisible) continue;
 
+					quarter = (side == 0 && y <= x && y <= -x) || (side == 2 && y <= x && y >= -x) || (side == 4 && y >= x && y >= -x) || (side == 6 && y >= x && y <= -x);
+					// quarter = y > x ? y > -x ? 4 : 6 : y > -x ? 2 : 0;
+
 				}
 
 				if ((Math.abs(i - this._position.y) < 2) && (Math.abs(g - this._position.x) < 2)) {
-					
+
 					t.visible = true;
 					t.inMind = true;
 					t.tag = 0;
@@ -371,15 +381,23 @@ define(["d", "Tile"], function(d, Tile) {
 					}, this);
 
 					if (t.visible) {
-						
+
 						t.inMind = true;
-						if (line2.length >= shadow) {
+						if (line2.length >= overview) {
 							t.visible = false;
 							t.inShadow = true;
 						}
-						
+
 					}
 				}
+
+				if (t.visible) {
+					if (!quarter) {
+						t.visible = false;
+						t.inShadow = true;
+					}
+				}
+
 			}
 		}
 	};
