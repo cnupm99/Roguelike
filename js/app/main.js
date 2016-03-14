@@ -13,7 +13,7 @@ define(["d", "Level", "Hero"], function(d, Level, Hero) {
 	var h = new Hero();
 
 	var l = new Level();
-	l.setHeroPosition(h.position);
+	l.setHeroPosition(h);
 	l.checkVisible(h.overview, h.shadow, h.side);
 	drawField();
 
@@ -81,7 +81,7 @@ define(["d", "Level", "Hero"], function(d, Level, Hero) {
 			if (l.isPassability(x1, y1)) {
 				h.position.x = x1;
 				h.position.y = y1;
-				l.setHeroPosition(h.position);
+				l.setHeroPosition(h);
 				console.time("visible");
 				l.checkVisible(h.overview, h.shadow, h.side);
 				console.timeEnd("visible");

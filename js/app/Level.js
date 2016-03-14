@@ -297,13 +297,15 @@ define(["d", "Tile"], function(d, Tile) {
 	 * Устанавливаем позицию героя
 	 * @param {Object} position позиция
 	 */
-	Level.prototype.setHeroPosition = function(position) {
+	Level.prototype.setHeroPosition = function(hero) {
 
-		this._map[this._position.y][this._position.x].isHero = false;
-		this._map[position.y][position.x].isHero = true;
+		this._map[this._position.y][this._position.x].contains = false;
+		this._map[this._position.y][this._position.x].child = null;
+		this._map[hero.position.y][hero.position.x].contains = true;
+		this._map[hero.position.y][hero.position.x].child = hero;
 		this._position = {
-			x: position.x,
-			y: position.y
+			x: hero.position.x,
+			y: hero.position.y
 		};
 
 	};
@@ -347,7 +349,6 @@ define(["d", "Tile"], function(d, Tile) {
 					if (!sideVisible) continue;
 
 					quarter = (side == 1 && x >= 0 && y <= 0) || (side == 3 && x >= 0 && y >= 0) || (side == 5 && x <= 0 && y >= 0) || (side == 7 && x <= 0 && y <= 0);
-					// quarter = x > 0 ? y > 0 ? 3 : 1 : y > 0 ? 5 : 7;
 
 				} else {
 
@@ -357,7 +358,6 @@ define(["d", "Tile"], function(d, Tile) {
 					if (!sideVisible) continue;
 
 					quarter = (side == 0 && y <= x && y <= -x) || (side == 2 && y <= x && y >= -x) || (side == 4 && y >= x && y >= -x) || (side == 6 && y >= x && y <= -x);
-					// quarter = y > x ? y > -x ? 4 : 6 : y > -x ? 2 : 0;
 
 				}
 
@@ -456,7 +456,10 @@ define(["d", "Tile"], function(d, Tile) {
 				if ((i < 0) || (i >= this._sizes.height) || (g < 0) || (g >= this._sizes.width)) {
 					text += "&nbsp;";
 				} else {
-					text += this._map[i][g].getText();
+					var t = this._map[i][g];
+					if (t.contains) {
+						text += t.child.getText();
+					} else text += t.getText();
 				}
 			}
 			text += "<br>";
