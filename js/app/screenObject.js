@@ -57,6 +57,17 @@ define(function() {
 		 * @public
 		 */
 		this.passability = false;
+		/**
+		 * Нужна ли анимация
+		 * @type {Boolean}
+		 * @public
+		 */
+		this.needAnimation = false;
+		/**
+		 * Действующие на тайл эффекты
+		 * @type {Array}
+		 */
+		this._effects = [];
 
 	}
 
@@ -71,6 +82,12 @@ define(function() {
 		if (this.inShadow) return "<font color='" + this._shadowColor + "'>" + this._represent + "</font>";
 		if (this.inMind) return "<font color='" + this._inMindColor + "'>" + this._represent + "</font>";
 		return "&nbsp;";
+
+	};
+
+	screenObject.prototype.animate = function() {
+
+		
 
 	};
 
