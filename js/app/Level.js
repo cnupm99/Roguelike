@@ -17,12 +17,14 @@ define(["d", "Tile"], function(d, Tile) {
 		 * возможные значения:
 		 *  0 - тестовый уровень
 		 *  1 - уровень из комнат (кирпичные стены и пол)
+		 * @private
 		 */
 		this._type = options.type || 0;
 
 		/**
 		 * Размеры уровня
 		 * @type {Object}
+		 * @private
 		 */
 		this._sizes = {
 			width: options.width || 100,
@@ -32,6 +34,7 @@ define(["d", "Tile"], function(d, Tile) {
 		/**
 		 * Размер шрифта в vh
 		 * @type {number}
+		 * @private
 		 */
 		this._fontSize = options.fontSize || 3;
 
@@ -41,6 +44,7 @@ define(["d", "Tile"], function(d, Tile) {
 		/**
 		 * Карта уровня составленная из тайлов
 		 * @type {Array}
+		 * @private
 		 */
 		this._map = [];
 		// создаем двумерный массив
@@ -51,6 +55,7 @@ define(["d", "Tile"], function(d, Tile) {
 		/**
 		 * Позиция героя по умолчанию
 		 * @type {Object}
+		 * @private
 		 */
 		this._position = {
 			x: 1,
@@ -60,7 +65,17 @@ define(["d", "Tile"], function(d, Tile) {
 		// генерация уровня в зависимости от его типа
 		switch (this._type) {
 			case 0:
+				/**
+				 * Тип стен
+				 * @type {Number}
+				 * @private
+				 */
 				this._wallType = 1;
+				/**
+				 * Тип пола
+				 * @type {Number}
+				 * @private
+				 */
 				this._floorType = 2;
 				this._generateRoomsMaze();
 				break;
@@ -75,6 +90,7 @@ define(["d", "Tile"], function(d, Tile) {
 
 	/**
 	 * Вычисляем размеры экранных символов
+	 * @private
 	 */
 	Level.prototype._setCharSizes = function() {
 
@@ -93,6 +109,7 @@ define(["d", "Tile"], function(d, Tile) {
 
 	/**
 	 * Генерация уровня, состоящего из комнат без коридоров
+	 * @private
 	 */
 	Level.prototype._generateRoomsMaze = function() {
 
@@ -133,7 +150,7 @@ define(["d", "Tile"], function(d, Tile) {
 				// вычисляем координаты новой стены так, чтобы она не приходилась на дверь
 				do {
 					newWallSize = halfMaxWall + ~~(halfMaxWall / 2 - Math.random() * halfMaxWall);
-				} while (this._getTilePass(room.x + newWallSize, room.y - 1) || this._getTilePass(room.x + newWallSize, room.y + room.height));
+				} while (this.getTilePass(room.x + newWallSize, room.y - 1) || this.getTilePass(room.x + newWallSize, room.y + room.height));
 
 				// создаем две новые комнаты
 				newRoom1 = {
@@ -164,7 +181,7 @@ define(["d", "Tile"], function(d, Tile) {
 
 				do {
 					newWallSize = halfMaxWall + ~~(halfMaxWall / 2 - Math.random() * halfMaxWall);
-				} while (this._getTilePass(room.x - 1, room.y + newWallSize) || this._getTilePass(room.x + room.width, room.y + newWallSize));
+				} while (this.getTilePass(room.x - 1, room.y + newWallSize) || this.getTilePass(room.x + room.width, room.y + newWallSize));
 
 				newRoom1 = {
 					x: room.x,
@@ -205,6 +222,7 @@ define(["d", "Tile"], function(d, Tile) {
 	 * @param {Object|number} arg1 координата х тайла либо объект с координатами
 	 * @param {number} arg2 координата у тайла либо тип тайла
 	 * @param {number|null} arg3 тип тайла тибо null
+	 * @private
 	 */
 	Level.prototype._setTile = function(arg1, arg2, arg3) {
 
@@ -228,6 +246,7 @@ define(["d", "Tile"], function(d, Tile) {
 	 * @param  {Object|number} arg1 координата х тайла либо объект с координатами
 	 * @param  {number|null} arg2 координата у тайла либо null
 	 * @return {number}      тип тайла
+	 * @private
 	 */
 	Level.prototype._getTileType = function(arg1, arg2) {
 
@@ -245,27 +264,6 @@ define(["d", "Tile"], function(d, Tile) {
 	};
 
 	/**
-	 * Возвращает проходимость тайла по указанным координатам
-	 * @param  {Object|number} arg1 координата х тайла либо объект с координатами
-	 * @param  {number|null} arg2 координата у тайла либо null
-	 * @return {boolean}      true если тайл проходим, иначе false
-	 */
-	Level.prototype._getTilePass = function(arg1, arg2) {
-
-		var x, y;
-		if (typeof(arg1) == "Object") {
-			x = arg1.x || arg1.x0 || arg1.left || 0;
-			y = arg1.y || arg1.y0 || arg1.top || 0;
-		} else {
-			x = arg1;
-			y = arg2;
-		}
-
-		return this._map[y][x].passability;
-
-	};
-
-	/**
 	 * Заливка прямоугольной области карты тайлами выбранного типа
 	 * @param  {Object} rect описание области карты
 	 * @param  {number} type тип тайлов
@@ -275,6 +273,7 @@ define(["d", "Tile"], function(d, Tile) {
 	 *   x1 либо right либо width,
 	 *   y1 либо bottom либо height
 	 * }
+	 * @private
 	 */
 	Level.prototype._fillRect = function(rect, type) {
 
@@ -294,8 +293,67 @@ define(["d", "Tile"], function(d, Tile) {
 	};
 
 	/**
+	 * Рассчитываем координаты линии по двум точкам
+	 * @param  {number} x0 координата х первой точки
+	 * @param  {number} y0 координата у первой точки
+	 * @param  {number} x1 координата х второй точки
+	 * @param  {number} y1 координата у второй точки
+	 * @return {Array}    массив точек линии
+	 * @private
+	 */
+	Level.prototype._drawLine = function(x0, y0, x1, y1) {
+
+		var dx = Math.abs(x1 - x0),
+			sx = x0 < x1 ? 1 : -1,
+			dy = Math.abs(y1 - y0),
+			sy = y0 < y1 ? 1 : -1,
+			err = dx > dy ? dx : -dy,
+			result = [],
+			e2;
+
+		while (x0 != x1 || y0 != y1) {
+			result.push([x0, y0]);
+			e2 = err;
+			if (e2 > -dx * 2) {
+				err -= dy;
+				x0 += sx;
+			}
+			if (e2 < dy * 2) {
+				err += dx;
+				y0 += sy;
+			}
+		}
+
+		return result;
+
+	};
+
+	/**
+	 * Возвращает проходимость тайла по указанным координатам
+	 * @param  {Object|number} arg1 координата х тайла либо объект с координатами
+	 * @param  {number|null} arg2 координата у тайла либо null
+	 * @return {boolean}      true если тайл проходим, иначе false
+	 * @public
+	 */
+	Level.prototype.getTilePass = function(arg1, arg2) {
+
+		var x, y;
+		if (typeof(arg1) == "Object") {
+			x = arg1.x || arg1.x0 || arg1.left || 0;
+			y = arg1.y || arg1.y0 || arg1.top || 0;
+		} else {
+			x = arg1;
+			y = arg2;
+		}
+
+		return this._map[y][x].passability;
+
+	};
+
+	/**
 	 * Устанавливаем позицию героя
-	 * @param {Object} position позиция
+	 * @param {Object} hero объект героя
+	 * @public
 	 */
 	Level.prototype.setHeroPosition = function(hero) {
 
@@ -310,6 +368,13 @@ define(["d", "Tile"], function(d, Tile) {
 
 	};
 
+	/**
+	 * Проверка видимости всех полей в радиусе видимости
+	 * @param  {number} overview радиус четкой видимости
+	 * @param  {number} shadow   радиус видимости в тени
+	 * @param  {number} side     сторона в которую смотрим
+	 * @public
+	 */
 	Level.prototype.checkVisible = function(overview, shadow, side) {
 
 		var minY = this._position.y - shadow,
@@ -327,8 +392,6 @@ define(["d", "Tile"], function(d, Tile) {
 		if (maxX > this._sizes.width) maxX = this._sizes.width;
 		if (maxY > this._sizes.height) maxY = this._sizes.height;
 
-		// console.log(this._position, side);
-
 		for (var i = minY; i < maxY; i++) {
 			for (var g = minX; g < maxX; g++) {
 
@@ -342,12 +405,14 @@ define(["d", "Tile"], function(d, Tile) {
 
 				if (checkSide) {
 
+					// проверка находится ли данный тайл в зоне видимости
 					var a = g - this._position.x,
 						b = sign1 * (i - this._position.y),
 						sideVisible = sign2 ? a <= b : a >= b;
 
 					if (!sideVisible) continue;
 
+					// вычисляем к какой четверти относится тайл
 					quarter = (side == 1 && x >= 0 && y <= 0) || (side == 3 && x >= 0 && y >= 0) || (side == 5 && x <= 0 && y >= 0) || (side == 7 && x <= 0 && y <= 0);
 
 				} else {
@@ -363,17 +428,21 @@ define(["d", "Tile"], function(d, Tile) {
 
 				if ((Math.abs(i - this._position.y) < 2) && (Math.abs(g - this._position.x) < 2)) {
 
+					// тайл в непосредственной близости
 					t.visible = true;
 					t.inMind = true;
 					t.tag = 0;
 
 				} else {
 
+					// чертим линию до тайла и от тайла
 					var line1 = this._drawLine(g, i, this._position.x, this._position.y),
 						line2 = this._drawLine(this._position.x, this._position.y, g, i);
 
+					// так надо, чтобы убрать сам тайл из рассмотрения
 					line1.shift();
 
+					// проверяем все тайлы на линии до данного тайла
 					t.visible = line1.every(function(point) {
 						return this._map[point[1]][point[0]].passability;
 					}, this) || line2.every(function(point) {
@@ -402,42 +471,10 @@ define(["d", "Tile"], function(d, Tile) {
 		}
 	};
 
-	Level.prototype._drawLine = function(x0, y0, x1, y1) {
-
-		var dx = Math.abs(x1 - x0),
-			sx = x0 < x1 ? 1 : -1,
-			dy = Math.abs(y1 - y0),
-			sy = y0 < y1 ? 1 : -1,
-			err = dx > dy ? dx : -dy,
-			result = [],
-			e2;
-
-		while (x0 != x1 || y0 != y1) {
-			result.push([x0, y0]);
-			e2 = err;
-			if (e2 > -dx * 2) {
-				err -= dy;
-				x0 += sx;
-			}
-			if (e2 < dy * 2) {
-				err += dx;
-				y0 += sy;
-			}
-		}
-
-		return result;
-
-	};
-
-	Level.prototype.isPassability = function(x0, y0) {
-
-		return this._map[y0][x0].passability;
-
-	};
-
 	/**
 	 * Вывод текста на элемент
 	 * @param  {element} element
+	 * @public
 	 */
 	Level.prototype.outText = function(element) {
 

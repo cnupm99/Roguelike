@@ -78,7 +78,7 @@ define(["d", "Level", "Hero"], function(d, Level, Hero) {
 					break;
 			}
 
-			if (l.isPassability(x1, y1)) {
+			if (l.getTilePass(x1, y1)) {
 				h.position.x = x1;
 				h.position.y = y1;
 				l.setHeroPosition(h);

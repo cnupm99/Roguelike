@@ -9,6 +9,7 @@ define(["screenObject"], function(screenObject) {
 	 */
 	function Tile(type) {
 
+		// конструктор родителя
 		screenObject.apply(this, arguments);
 
 		/**
@@ -16,10 +17,21 @@ define(["screenObject"], function(screenObject) {
 		 * @type {number}
 		 *  1 - простая кирпичная стена
 		 *  2 - простой кирпичный пол
+		 * @public
 		 */
 		this.type = type;
 
+		/**
+		 * содержит ли тайл что-то на себе
+		 * @type {Boolean}
+		 * @public
+		 */
 		this.contains = false;
+		/**
+		 * содержание тайла (дочерний объект)
+		 * @type {Object|null}
+		 * @public
+		 */
 		this.child = null;
 
 		switch (this.type) {
@@ -43,6 +55,7 @@ define(["screenObject"], function(screenObject) {
 
 	}
 
+	// наследование
 	Tile.prototype = Object.create(screenObject.prototype);
 	Tile.prototype.constructor = Tile;
 
