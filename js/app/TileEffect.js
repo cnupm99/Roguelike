@@ -5,13 +5,15 @@ define(function() {
 	function TileEffect(effectName) {
 
 		this.effectName = effectName;
-		this.stage = 0;
+		this.moves = 0;
+		this._stage = 0;
 
 		switch (effectName) {
 			case "shadow":
-				this.duration = 2;
+				this.duration = 1;
 				this.color = "#777";
 				this.render = this._shadowRender;
+				this.z = 1;
 				break;
 		}
 
@@ -19,7 +21,10 @@ define(function() {
 
 	TileEffect.prototype._shadowRender = function() {
 
-		this.color = "#888";
+		this._stage++;
+		if (this._stage % 2 == 1) {
+			this.color = "#888" 
+		} else this.color = "#777";
 
 	};
 

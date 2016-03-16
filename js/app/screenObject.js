@@ -73,7 +73,7 @@ define(function() {
 
 	screenObject.prototype.setEffect = function(effect) {
 
-		if (~this._effects.indexOf(effect)) {
+		if (this._effects.indexOf(effect) < 0) {
 			this._effects.push(effect);
 			this.needAnimation = true;
 		}
@@ -119,8 +119,11 @@ define(function() {
 		this._effects.forEach(function(effect, i) {
 
 			effect.render();
-			effect.stage++;
-			if (effect.stage == effect.duration) this._effects.splice(i, 1);
+			effect.moves++;
+			if (effect.moves == effect.duration) {
+				this._effects.splice(i, 1);
+				if (this._effects.length == 0) this.needAnimation = false;
+			}
 
 		}, this);
 

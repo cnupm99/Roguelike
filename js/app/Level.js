@@ -87,7 +87,7 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		}
 
 		this._animationSpeed = 200;
-		this._animator = setInterval(this._animate, this._animationSpeed);
+		this._animator = setInterval(this._animate.bind(this), this._animationSpeed);
 
 	}
 
