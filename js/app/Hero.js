@@ -7,6 +7,7 @@ define(["screenObject"], function(screenObject) {
 		screenObject.apply(this, arguments);
 
 		this.visible = true;
+		this.inMind = true;
 		this._represent = "@";
 		this._visibleColor = "#0F0";
 

@@ -71,6 +71,15 @@ define(function() {
 
 	}
 
+	screenObject.prototype.setEffect = function(effect) {
+
+		if (~this._effects.indexOf(effect)) {
+			this._effects.push(effect);
+			this.needAnimation = true;
+		}
+
+	};
+
 	/**
 	 * Функция возвращает текстовое представление тайла с html оформление шрифта
 	 * @return {string}
@@ -78,16 +87,42 @@ define(function() {
 	 */
 	screenObject.prototype.getText = function() {
 
-		if (this.visible) return "<font color='" + this._visibleColor + "'>" + this._represent + "</font>";
-		if (this.inShadow) return "<font color='" + this._shadowColor + "'>" + this._represent + "</font>";
-		if (this.inMind) return "<font color='" + this._inMindColor + "'>" + this._represent + "</font>";
-		return "&nbsp;";
+		if (this.inMind) {
+
+			// var color = this.visible ? this._visibleColor : this.inShadow ? this._shadowColor : this._inMindColor;
+			var color = this.visible ? this._visibleColor : this._inMindColor,
+				z = 0;
+
+			this._effects.forEach(function(effect) {
+
+				if (effect.z >= z) {
+
+					z = effect.z;
+					color = effect.color;
+
+				}
+
+			});
+
+			return "<font color='" + color + "'>" + this._represent + "</font>";
+
+		} else {
+
+			return "&nbsp;";
+
+		}
 
 	};
 
 	screenObject.prototype.animate = function() {
 
-		
+		this._effects.forEach(function(effect, i) {
+
+			effect.render();
+			effect.stage++;
+			if (effect.stage == effect.duration) this._effects.splice(i, 1);
+
+		}, this);
 
 	};
 

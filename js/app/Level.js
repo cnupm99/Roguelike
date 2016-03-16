@@ -1,6 +1,6 @@
 "use strict";
 
-define(["d", "Tile"], function(d, Tile) {
+define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 	/**
 	 * Новый уровень
@@ -86,7 +86,21 @@ define(["d", "Tile"], function(d, Tile) {
 				break;
 		}
 
+		this._animationSpeed = 200;
+		this._animator = setInterval(this._animate, this._animationSpeed);
+
 	}
+
+	Level.prototype._animate = function() {
+
+		for (var i = 0; i < this._sizes.height; i++) {
+			for (var g = 0; g < this._sizes.width; g++) {
+				var t = this._map[i][g];
+				if (t.needAnimation) t.animate();
+			}
+		}
+
+	};
 
 	/**
 	 * Вычисляем размеры экранных символов
@@ -466,6 +480,8 @@ define(["d", "Tile"], function(d, Tile) {
 						t.inShadow = true;
 					}
 				}
+
+				if (t.inShadow) t.setEffect(new TileEffect("shadow"));
 
 			}
 		}
