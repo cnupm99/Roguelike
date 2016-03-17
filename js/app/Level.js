@@ -77,11 +77,17 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 				 * @private
 				 */
 				this._floorType = 2;
+				/**
+				 * Тайл дверей
+				 * @type {Number}
+				 */
+				this._doorType = 3;
 				this._generateRoomsMaze();
 				break;
 			case 1:
 				this._wallType = 1;
 				this._floorType = 2;
+				this._doorType = 3;
 				this._generateRoomsMaze();
 				break;
 		}
@@ -182,7 +188,8 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 				y: 1,
 				width: this._sizes.width - 2,
 				height: this._sizes.height - 2
-			}];
+			}],
+			smallRooms = [];
 
 		// цикл деления комнат на меньшие
 		while (rooms.length > 0) {
@@ -227,7 +234,10 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 				// рисуем дверь
 				doorCoord = ~~(Math.random() * room.height);
-				this._setTile(room.x + newWallSize, room.y + doorCoord, this._floorType);
+				this._setTile(room.x + newWallSize, room.y + doorCoord, this._doorType);
+				newRoom1.door = [room.x + newWallSize, room.y + doorCoord];
+				newRoom2.door = [room.x + newWallSize, room.y + doorCoord];
+
 			} else {
 
 				do {
@@ -253,7 +263,10 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 					height: 1
 				}, this._wallType);
 				doorCoord = ~~(Math.random() * room.width);
-				this._setTile(room.x + doorCoord, room.y + newWallSize, this._floorType);
+				this._setTile(room.x + doorCoord, room.y + newWallSize, this._doorType);
+				newRoom1.door = [room.x + doorCoord, room.y + newWallSize];
+				newRoom2.door = [room.x + doorCoord, room.y + newWallSize];
+
 			}
 
 			// размеры новых комнат
@@ -293,13 +306,13 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 	};
 
 	/**
-	 * Возвращает тип тайла по указанным координатам
+	 * Возвращает тайл по указанным координатам
 	 * @param  {Object|number} arg1 координата х тайла либо объект с координатами
 	 * @param  {number|null} arg2 координата у тайла либо null
-	 * @return {number}      тип тайла
+	 * @return {number}      тайл
 	 * @private
 	 */
-	Level.prototype._getTileType = function(arg1, arg2) {
+	/*Level.prototype.getTile = function(arg1, arg2) {
 
 		var x, y;
 		if (typeof(arg1) == "Object") {
@@ -310,7 +323,45 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 			y = arg2;
 		}
 
-		return this._map[y][x].type;
+		return this._map[y][x];
+
+	};*/
+
+	Level.prototype.openDoor = function(dx, dy) {
+
+		var t = this._map[dy][dx];
+
+		if (t.type != this._doorType) return;
+		if (!t.closed) return;
+
+		t.closed = false;
+		t.passability = true;
+		t.setRepresent("`");
+
+	};
+
+	Level.prototype.closeDoor = function(position) {
+
+		var minX = position.x - 1,
+			maxX = position.x + 1,
+			minY = position.y - 1,
+			maxY = position.y + 1;
+
+		if (minX < 0) minX = 0;
+		if (minY < 0) minY = 0;
+		if (maxX > this._sizes.width) maxX = this._sizes.width;
+		if (maxY > this._sizes.height) maxY = this._sizes.height;
+
+		for (var i = minY; i <= maxY; i++) {
+			for (var g = minX; g <= maxX; g++) {
+				var t = this._map[i][g];
+				if ((t.type == this._doorType) && (!t.closed)) {
+					t.closed = true;
+					t.passability = false;
+					t.setRepresent("+");
+				}
+			}
+		}
 
 	};
 

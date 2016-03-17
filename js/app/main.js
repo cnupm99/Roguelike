@@ -83,14 +83,19 @@ define(["d", "Level", "Hero"], function(d, Level, Hero) {
 				h.position.x = x1;
 				h.position.y = y1;
 				l.setHeroPosition(h);
-				console.time("visible");
-				l.checkVisible(h.overview, h.shadow, h.side);
-				console.timeEnd("visible");
+			} else {
+				l.openDoor(x1, y1);
 			}
 
 		}
 
+		if (key == 99) {
+			l.closeDoor(h.position);
+		}
 
+		console.time("visible");
+		l.checkVisible(h.overview, h.shadow, h.side);
+		console.timeEnd("visible");
 
 	}
 
