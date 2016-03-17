@@ -86,17 +86,54 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 				break;
 		}
 
+		/**
+		 * Нужна ли анимация уровня
+		 * @type {Boolean}
+		 */
+		this._needAnimation = true;
+		/**
+		 * Скорость анимации
+		 * @type {Number}
+		 */
 		this._animationSpeed = 200;
-		this._animator = setInterval(this._animate.bind(this), this._animationSpeed);
+		// Старт анимации
+		if (this._needAnimation) this._animator = setInterval(this._animate.bind(this), this._animationSpeed);
 
 	}
 
+	/**
+	 * Анимация всех тайлов, которым это нужно
+	 * @public
+	 */
 	Level.prototype._animate = function() {
 
 		for (var i = 0; i < this._sizes.height; i++) {
 			for (var g = 0; g < this._sizes.width; g++) {
 				var t = this._map[i][g];
 				if (t.needAnimation) t.animate();
+			}
+		}
+
+	};
+
+	/**
+	 * Действия на начало хода игрока
+	 * @public
+	 */
+	Level.prototype.startTurn = function() {
+
+		// прибавляем время действия эффектов,
+		// если нужно отменяем их действие
+		for (var i = 0; i < this._sizes.height; i++) {
+			for (var g = 0; g < this._sizes.width; g++) {
+				var t = this._map[i][g];
+				t.effects.forEach(function(effect, i) {
+					effect.moves++;
+					if (effect.moves == effect.duration) {
+						t.effects.splice(i, 1);
+						if (t.effects.length == 0) t.needAnimation = false;
+					}
+				});
 			}
 		}
 
@@ -412,10 +449,10 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 				var x = g - this._position.x,
 					y = i - this._position.y,
 					quarter,
+					shadow = false,
 					t = this._map[i][g];
 
 				t.visible = false;
-				t.inShadow = false;
 
 				if (checkSide) {
 
@@ -445,7 +482,6 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 					// тайл в непосредственной близости
 					t.visible = true;
 					t.inMind = true;
-					t.tag = 0;
 
 				} else {
 
@@ -467,21 +503,25 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 						t.inMind = true;
 						if (line2.length >= overview) {
+							// тайл слишком далеко, убираем в тень
 							t.visible = false;
-							t.inShadow = true;
+							shadow = true;
 						}
 
 					}
 				}
 
+				// тайл не в секторе прямой видимости,
+				// убираем в тень
 				if (t.visible) {
 					if (!quarter) {
 						t.visible = false;
-						t.inShadow = true;
+						shadow = true;
 					}
 				}
 
-				if (t.inShadow) t.setEffect(new TileEffect("shadow"));
+				// установить эффект тени
+				if (shadow) t.setEffect(new TileEffect("shadow"));
 
 			}
 		}

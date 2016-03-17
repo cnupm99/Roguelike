@@ -21,6 +21,7 @@ define(["d", "Level", "Hero"], function(d, Level, Hero) {
 
 	function onKeyPress(e) {
 
+		l.startTurn();
 		// console.log(e);
 		var key = e.charCode;
 
@@ -88,6 +89,8 @@ define(["d", "Level", "Hero"], function(d, Level, Hero) {
 			}
 
 		}
+
+
 
 	}
 

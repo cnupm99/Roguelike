@@ -21,12 +21,6 @@ define(function() {
 		 */
 		this.inMind = false;
 		/**
-		 * Находится ли тайл в тени
-		 * @type {Boolean}
-		 * @public
-		 */
-		this.inShadow = false;
-		/**
 		 * Текстовое представление тайла
 		 * @type {String}
 		 * @private
@@ -38,13 +32,6 @@ define(function() {
 		 * @private
 		 */
 		this._visibleColor = "#FFF";
-		/**
-		 * Цвет тайла в тени
-		 * @type {String}
-		 * @private
-		 */
-		this._shadowColor = "#777";
-		this._shadowMergeColor = "#888";
 		/**
 		 * Цвет тайла в памяти
 		 * @type {String}
@@ -67,16 +54,41 @@ define(function() {
 		 * Действующие на тайл эффекты
 		 * @type {Array}
 		 */
-		this._effects = [];
+		this.effects = [];
 
 	}
 
+	/**
+	 * Добавить эффект тайлу, если такого нет
+	 * @param {TileEffect} effect эффект
+	 * @public
+	 */
 	screenObject.prototype.setEffect = function(effect) {
 
-		if (this._effects.indexOf(effect) < 0) {
-			this._effects.push(effect);
+		if (!this.effects.some(function(e) {
+				return e.effectName == effect.effectName;
+			})) {
+			this.effects.push(effect);
 			this.needAnimation = true;
 		}
+
+	};
+
+	/**
+	 * Удаляет эффект с тайла, если такой есть
+	 * @param  {String} effectName название эффекта
+	 * @public
+	 */
+	screenObject.prototype.removeEffect = function(effectName) {
+
+		this.effects.forEach(function(effect, i) {
+
+			if (effect.effectName == effectName) {
+				this.effects.splice(i, 1);
+				if (this.effects.length == 0) this.needAnimation = false;
+			}
+
+		}, this);
 
 	};
 
@@ -89,11 +101,11 @@ define(function() {
 
 		if (this.inMind) {
 
-			// var color = this.visible ? this._visibleColor : this.inShadow ? this._shadowColor : this._inMindColor;
 			var color = this.visible ? this._visibleColor : this._inMindColor,
 				z = 0;
 
-			this._effects.forEach(function(effect) {
+			// если на тайл действуют эффекты, то изменяем цвет
+			this.effects.forEach(function(effect) {
 
 				if (effect.z >= z) {
 
@@ -114,16 +126,15 @@ define(function() {
 
 	};
 
+	/**
+	 * Рендер всех эффектов
+	 * @public
+	 */
 	screenObject.prototype.animate = function() {
 
-		this._effects.forEach(function(effect, i) {
+		this.effects.forEach(function(effect, i) {
 
 			effect.render();
-			effect.moves++;
-			if (effect.moves == effect.duration) {
-				this._effects.splice(i, 1);
-				if (this._effects.length == 0) this.needAnimation = false;
-			}
 
 		}, this);
 
