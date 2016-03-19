@@ -1,0 +1,25 @@
+{
+	"log":[
+		"you go to north",
+		"you go to north-east",
+		"you go to east",
+		"you go to south-east",
+		"you go to south",
+		"you go to south-west",
+		"you go to west",
+		"you go to north-west",
+		"you turn to north",
+		"you turn to north-east",
+		"you turn to east",
+		"you turn to south-east",
+		"you turn to south",
+		"you turn to south-west",
+		"you turn to west",
+		"you turn to north-west",
+		"you open door",
+		"you close door",
+		"you close doors",
+		"no doors to close around",
+		"you wait something..."
+	]
+}

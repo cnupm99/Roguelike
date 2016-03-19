@@ -205,7 +205,9 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 			if (wallOrientation) {
 
-				// вычисляем координаты новой стены так, чтобы она не приходилась на дверь
+				// вычисляем координаты новой стены
+				// тут она может приходится на дверь
+				// так что дверь может быть по диагонали
 				do {
 					newWallSize = halfMaxWall + ~~(halfMaxWall / 2 - Math.random() * halfMaxWall);
 				} while (this.getTilePass(room.x + newWallSize, room.y - 1) || this.getTilePass(room.x + newWallSize, room.y + room.height));
@@ -215,13 +217,15 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 					x: room.x,
 					y: room.y,
 					width: newWallSize,
-					height: room.height
+					height: room.height,
+					doors: []
 				};
 				newRoom2 = {
 					x: room.x + newWallSize + 1,
 					y: room.y,
 					width: room.width - newWallSize - 1,
-					height: room.height
+					height: room.height,
+					doors: []
 				};
 
 				// рисуем стены
@@ -235,8 +239,8 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 				// рисуем дверь
 				doorCoord = ~~(Math.random() * room.height);
 				this._setTile(room.x + newWallSize, room.y + doorCoord, this._doorType);
-				newRoom1.door = [room.x + newWallSize, room.y + doorCoord];
-				newRoom2.door = [room.x + newWallSize, room.y + doorCoord];
+				newRoom1.doors.push([room.x + newWallSize, room.y + doorCoord]);
+				newRoom2.doors.push([room.x + newWallSize, room.y + doorCoord]);
 
 			} else {
 
@@ -248,13 +252,15 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 					x: room.x,
 					y: room.y,
 					width: room.width,
-					height: newWallSize
+					height: newWallSize,
+					doors: []
 				};
 				newRoom2 = {
 					x: room.x,
 					y: room.y + newWallSize + 1,
 					width: room.width,
 					height: room.height - newWallSize - 1,
+					doors: []
 				};
 				this._fillRect({
 					x: room.x,
@@ -264,8 +270,8 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 				}, this._wallType);
 				doorCoord = ~~(Math.random() * room.width);
 				this._setTile(room.x + doorCoord, room.y + newWallSize, this._doorType);
-				newRoom1.door = [room.x + doorCoord, room.y + newWallSize];
-				newRoom2.door = [room.x + doorCoord, room.y + newWallSize];
+				newRoom1.doors.push([room.x + doorCoord, room.y + newWallSize]);
+				newRoom2.doors.push([room.x + doorCoord, room.y + newWallSize]);
 
 			}
 
@@ -274,8 +280,13 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 				room2maxWall = Math.max(newRoom2.width, newRoom2.height);
 
 			// если они слишком большие, то будем их делить
-			if (room1maxWall > minRoomSize) rooms.push(newRoom1);
-			if (room2maxWall > minRoomSize) rooms.push(newRoom2);
+			// или добавим в массив готовых комнат
+			if (room1maxWall > minRoomSize) {
+				rooms.push(newRoom1);
+			} else smallRooms.push(newRoom1);
+			if (room2maxWall > minRoomSize) {
+				rooms.push(newRoom2);
+			} else smallRooms.push(newRoom2);
 
 		}
 
@@ -327,25 +338,38 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 	};*/
 
+	/**
+	 * Открыть дверь по заданным координатам
+	 * @param  {Number} dx координата х двери
+	 * @param  {Number} dy координата у двери
+	 * @return {Boolean}    true, если дверь открыта, иначе false
+	 */
 	Level.prototype.openDoor = function(dx, dy) {
 
 		var t = this._map[dy][dx];
 
-		if (t.type != this._doorType) return;
-		if (!t.closed) return;
+		if (t.type != this._doorType) return false;
+		if (!t.closed) return false;
 
 		t.closed = false;
 		t.passability = true;
 		t.setRepresent("`");
+		return true;
 
 	};
 
+	/**
+	 * Закрываем двери вокруг героя
+	 * @param  {Object} position позиция героя
+	 * @return {Number}          количество закрытых дверей
+	 */
 	Level.prototype.closeDoor = function(position) {
 
 		var minX = position.x - 1,
 			maxX = position.x + 1,
 			minY = position.y - 1,
-			maxY = position.y + 1;
+			maxY = position.y + 1,
+			flag = 0;
 
 		if (minX < 0) minX = 0;
 		if (minY < 0) minY = 0;
@@ -359,9 +383,12 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 					t.closed = true;
 					t.passability = false;
 					t.setRepresent("+");
+					flag++;
 				}
 			}
 		}
+
+		return flag;
 
 	};
 
