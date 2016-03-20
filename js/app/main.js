@@ -19,6 +19,8 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 		lang = data;
 		// console.log(lang);
 		document.body.addEventListener("keypress", onKeyPress);
+		// document.body.addEventListener("click", onMouseClick);
+		d("main").addEventListener("click", onMouseClick);
 
 	});
 
@@ -28,6 +30,11 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 	l.setHeroPosition(h);
 	l.checkVisible(h.overview, h.shadow, h.side);
 	drawField();
+
+	function onMouseClick(e) {
+		console.log(e);
+		console.log(l.getTileOnCoord(e));
+	}
 
 	function onKeyPress(e) {
 

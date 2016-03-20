@@ -9,15 +9,16 @@ body {
 	overflow: hidden;
 }
 #info {
-	width: 33%;
+	width: 25%;
 	height: 100%;
 	float: left;
 	position: absolute;
 	padding: 1vh;
 }
 #main {
-	width: 67%;
-	left: 33%;
+	width: 75%;
+	left: 25%;
 	height: 100%;
 	position: absolute;
+	cursor: default;
 }

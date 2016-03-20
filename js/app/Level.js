@@ -640,6 +640,15 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 	};
 
+	Level.prototype.getTileOnCoord = function(e) {
+
+		var ex = ~~(e.offsetX / this._charWidth) + this._position.x,
+			ey = ~~(e.offsetY / this._charHeight) + this._position.y;
+
+		return [ex, ey];
+
+	};
+
 	return Level;
 
 });
