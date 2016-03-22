@@ -32,8 +32,8 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 	drawField();
 
 	function onMouseClick(e) {
-		console.log(e);
-		console.log(l.getTileOnCoord(e));
+		// console.log(e);
+		// console.log(l.getTileOnCoord(e));
 	}
 
 	function onKeyPress(e) {

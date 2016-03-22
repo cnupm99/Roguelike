@@ -179,8 +179,8 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		// размеры уровня
 		this._sizes.scrWidth = Math.ceil(d("main").clientWidth / this._sizes.charWidth);
 		this._sizes.scrHeight = Math.ceil(d("main").clientHeight / this._sizes.charHeight);
-		this._sizes.scrHalfWidth = ~~(this._sizes.scrWidth / 2);
-		this._sizes.scrHalfHeight = ~~(this._sizes.scrHeight / 2);
+		this._sizes.scrHalfWidth = Math.ceil(this._sizes.scrWidth / 2);
+		this._sizes.scrHalfHeight = Math.ceil(this._sizes.scrHeight / 2);
 
 	};
 
@@ -654,7 +654,7 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 					s.innerHTML = t.getText();
 					s.style.color = t.getColor();
 				}
-				
+
 			}
 		}
 
@@ -662,8 +662,8 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 	Level.prototype.getTileOnCoord = function(e) {
 
-		var ex = ~~(e.offsetX / this._charWidth) + this._position.x,
-			ey = ~~(e.offsetY / this._charHeight) + this._position.y;
+		var ex = Math.floor(e.offsetX / this._sizes.charWidth) + this._position.x - this._sizes.scrHalfWidth,
+			ey = Math.floor(e.offsetY / this._sizes.charHeight) + this._position.y - this._sizes.scrHalfHeight;
 
 		return [ex, ey];
 
