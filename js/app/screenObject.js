@@ -93,11 +93,21 @@ define(function() {
 	};
 
 	/**
-	 * Функция возвращает текстовое представление тайла с html оформление шрифта
+	 * Функция возвращает текстовое представление тайла
 	 * @return {string}
 	 * @public
 	 */
 	screenObject.prototype.getText = function() {
+
+		return this.visible ? this._represent : this.inMind ? this._represent : "&nbsp;";
+
+	};
+
+	/**
+	 * Возвращаем цвет тайла в зависимости от видимости и эффектов
+	 * @return {string} цвет тайла в формате css
+	 */
+	screenObject.prototype.getColor = function() {
 
 		if (this.inMind) {
 
@@ -116,11 +126,11 @@ define(function() {
 
 			});
 
-			return "<font color='" + color + "'>" + this._represent + "</font>";
+			return color;
 
 		} else {
 
-			return "&nbsp;";
+			return "#000";
 
 		}
 

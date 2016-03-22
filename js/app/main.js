@@ -150,7 +150,7 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 	}
 
 	function drawField() {
-		l.outText(d("main"));
+		l.outText();
 		requestAnimationFrame(drawField);
 	}
 

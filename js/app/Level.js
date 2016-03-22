@@ -22,7 +22,14 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		this._type = options.type || 0;
 
 		/**
-		 * Размеры уровня
+		 * Размер шрифта в vh
+		 * @type {number}
+		 * @private
+		 */
+		this._fontSize = options.fontSize || 3;
+
+		/**
+		 * Размеры уровня, экрана и символов
 		 * @type {Object}
 		 * @private
 		 */
@@ -31,15 +38,19 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 			height: options.height || 100
 		}
 
+		// вычисляем размеры экранных символов и уровня
+		// а также устанавливаем размер шрифта
+		this._setCharSizes();
+
 		/**
-		 * Размер шрифта в vh
-		 * @type {number}
+		 * Позиция героя по умолчанию
+		 * @type {Object}
 		 * @private
 		 */
-		this._fontSize = options.fontSize || 3;
-
-		// вычисляем размеры экранных символов
-		this._setCharSizes();
+		this._position = {
+			x: 1,
+			y: 1
+		}
 
 		/**
 		 * Карта уровня составленная из тайлов
@@ -53,13 +64,16 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		}
 
 		/**
-		 * Позиция героя по умолчанию
-		 * @type {Object}
-		 * @private
+		 * Массив элементов span для отображения информации на экране
+		 * @type {Array}
 		 */
-		this._position = {
-			x: 1,
-			y: 1
+		this._screen = [];
+		for (var i = 0; i < this._sizes.scrHeight; i++) {
+			this._screen[i] = [];
+			for (var g = 0; g < this._sizes.scrWidth; g++) {
+				this._screen[i][g] = d("main").add("span");
+			}
+			d("main").add("br");
 		}
 
 		// генерация уровня в зависимости от его типа
@@ -146,11 +160,12 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 	};
 
 	/**
-	 * Вычисляем размеры экранных символов
+	 * Вычисляем размеры экранных символов и уровня
 	 * @private
 	 */
 	Level.prototype._setCharSizes = function() {
 
+		d("main").style.fontSize = this._fontSize + "vh";
 		var div = document.body.add("div", {
 			innerHTML: "&nbsp;"
 		});
@@ -158,9 +173,14 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		div.style.width = "auto";
 		div.style.height = "auto";
 		div.style.position = "absolute";
-		this._charWidth = div.clientWidth;
-		this._charHeight = div.clientHeight;
+		this._sizes.charWidth = div.clientWidth;
+		this._sizes.charHeight = div.clientHeight;
 		document.body.removeChild(div);
+		// размеры уровня
+		this._sizes.scrWidth = Math.ceil(d("main").clientWidth / this._sizes.charWidth);
+		this._sizes.scrHeight = Math.ceil(d("main").clientHeight / this._sizes.charHeight);
+		this._sizes.scrHalfWidth = ~~(this._sizes.scrWidth / 2);
+		this._sizes.scrHalfHeight = ~~(this._sizes.scrHeight / 2);
 
 	};
 
@@ -606,37 +626,37 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 	};
 
 	/**
-	 * Вывод текста на элемент
-	 * @param  {element} element
+	 * Обновление информации на экране
 	 * @public
 	 */
-	Level.prototype.outText = function(element) {
+	Level.prototype.outText = function() {
 
-		var scrWidth = Math.ceil(element.clientWidth / this._charWidth),
-			scrHeight = Math.ceil(element.clientHeight / this._charHeight),
-			scrHalfWidth = ~~(scrWidth / 2),
-			scrHalfHeight = ~~(scrHeight / 2),
-			minX = this._position.x - scrHalfWidth,
-			maxX = this._position.x + scrHalfWidth,
-			minY = this._position.y - scrHalfHeight,
-			maxY = this._position.y + scrHalfHeight,
-			text = "";
+		var dy = this._position.y - this._sizes.scrHalfHeight,
+			dx = this._position.x - this._sizes.scrHalfWidth;
 
-		for (var i = minY; i < maxY; i++) {
-			for (var g = minX; g < maxX; g++) {
-				if ((i < 0) || (i >= this._sizes.height) || (g < 0) || (g >= this._sizes.width)) {
-					text += "&nbsp;";
-				} else {
-					var t = this._map[i][g];
-					if (t.contains) {
-						text += t.child.getText();
-					} else text += t.getText();
+		for (var i = 0; i < this._sizes.scrHeight; i++) {
+			for (var g = 0; g < this._sizes.scrWidth; g++) {
+				
+				var ty = i + dy,
+					tx = g + dx,
+					t = this._map[ty] ? this._map[ty][tx] ? this._map[ty][tx] : null : null,
+					s = this._screen[i][g];
+
+				if (t === null) {
+					s.innerHTML = "&nbsp;";
+					continue;
 				}
+
+				if (t.contains) {
+					s.innerHTML = t.child.getText();
+					s.style.color = t.child.getColor();
+				} else {
+					s.innerHTML = t.getText();
+					s.style.color = t.getColor();
+				}
+				
 			}
-			text += "<br>";
 		}
-		element.style.fontSize = this._fontSize + "vh";
-		element.innerHTML = text;
 
 	};
 
