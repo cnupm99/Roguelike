@@ -15,6 +15,13 @@ body {
 	position: absolute;
 	padding: 1vh;
 }
+#desc {
+	height: auto;
+	width: 100%;
+	position: absolute;
+	bottom: 0;
+	color: #DDD;
+}
 #main {
 	width: 75%;
 	left: 25%;

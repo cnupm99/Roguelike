@@ -71,7 +71,10 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		for (var i = 0; i < this._sizes.scrHeight; i++) {
 			this._screen[i] = [];
 			for (var g = 0; g < this._sizes.scrWidth; g++) {
-				this._screen[i][g] = d("main").add("span");
+				var s = d("main").add("span");
+				s.setAttribute("data-x", g);
+				s.setAttribute("data-y", i);
+				this._screen[i][g] = s;
 			}
 			d("main").add("br");
 		}
@@ -118,6 +121,21 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		this._animationSpeed = 200;
 		// Старт анимации
 		if (this._needAnimation) this._animator = setInterval(this._animate.bind(this), this._animationSpeed);
+
+		d("main").addEventListener("mouseover", this._mouseover);
+		d("main").addEventListener("mouseout", this._mouseout);
+
+	}
+
+	Level.prototype._mouseover = function(e) {
+
+		e.target.style.backgroundColor = "#222";
+
+	};
+
+	Level.prototype._mouseout = function(e) {
+
+		e.target.style.backgroundColor = "#000";
 
 	}
 
@@ -636,7 +654,7 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 		for (var i = 0; i < this._sizes.scrHeight; i++) {
 			for (var g = 0; g < this._sizes.scrWidth; g++) {
-				
+
 				var ty = i + dy,
 					tx = g + dx,
 					t = this._map[ty] ? this._map[ty][tx] ? this._map[ty][tx] : null : null,
@@ -662,8 +680,8 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 	Level.prototype.getTileOnCoord = function(e) {
 
-		var ex = Math.floor(e.offsetX / this._sizes.charWidth) + this._position.x - this._sizes.scrHalfWidth,
-			ey = Math.floor(e.offsetY / this._sizes.charHeight) + this._position.y - this._sizes.scrHalfHeight;
+		var ex = parseInt(e.target.getAttribute("data-x")) - this._sizes.scrHalfWidth + 1,
+			ey = parseInt(e.target.getAttribute("data-y")) - this._sizes.scrHalfHeight + 1;
 
 		return [ex, ey];
 

@@ -5,6 +5,8 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 	document.body.add("div", {
 		id: "info",
 		innerHTML: "Wellcome to Random Roguelike game. If you dont know what to do, press F1."
+	}).add("div", {
+		id: "desc"
 	});
 
 	document.body.add("div", {
@@ -33,7 +35,7 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 
 	function onMouseClick(e) {
 		// console.log(e);
-		// console.log(l.getTileOnCoord(e));
+		console.log(l.getTileOnCoord(e));
 	}
 
 	function onKeyPress(e) {
