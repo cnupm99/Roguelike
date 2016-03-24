@@ -56,6 +56,8 @@ define(function() {
 		 */
 		this.effects = [];
 
+		this._desc = 2;
+
 	}
 
 	/**
@@ -147,6 +149,23 @@ define(function() {
 			effect.render();
 
 		}, this);
+
+	};
+
+	screenObject.prototype.getDesc = function() {
+
+		var desc = this.visible ? lang.tiles[0] : lang.tiles[1];
+		desc += lang.tiles[this._desc];
+
+		if (this.effects.length == 0) return desc;
+
+		desc += "; " + lang.tiles[2] + ": ";
+		this.effects.forEach(function(effect, i) {
+			desc += effect.effectName;
+			if (i < this.effects.length - 1) desc += ", ";
+		}, this);
+
+		return desc;
 
 	};
 

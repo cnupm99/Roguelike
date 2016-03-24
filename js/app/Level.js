@@ -122,7 +122,7 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		// Старт анимации
 		if (this._needAnimation) this._animator = setInterval(this._animate.bind(this), this._animationSpeed);
 
-		d("main").addEventListener("mouseover", this._mouseover);
+		d("main").addEventListener("mouseover", this._mouseover.bind(this));
 		d("main").addEventListener("mouseout", this._mouseout);
 
 	}
@@ -131,11 +131,20 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 		e.target.style.backgroundColor = "#222";
 
+		var t = this._getTileOnCoord(e);
+		if (t === null) return;
+
+		if (!t.inMind) return;
+
+		d("desc").innerHTML = t.contains ? t.child.getDesc() : t.getDesc();
+
 	};
 
 	Level.prototype._mouseout = function(e) {
 
 		e.target.style.backgroundColor = "#000";
+
+		d("desc").innerHTML = "";
 
 	}
 
@@ -387,12 +396,8 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		var t = this._map[dy][dx];
 
 		if (t.type != this._doorType) return false;
-		if (!t.closed) return false;
 
-		t.closed = false;
-		t.passability = true;
-		t.setRepresent("`");
-		return true;
+		return t.openDoor();
 
 	};
 
@@ -417,11 +422,8 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		for (var i = minY; i <= maxY; i++) {
 			for (var g = minX; g <= maxX; g++) {
 				var t = this._map[i][g];
-				if ((t.type == this._doorType) && (!t.closed)) {
-					t.closed = true;
-					t.passability = false;
-					t.setRepresent("+");
-					flag++;
+				if (t.type == this._doorType) {
+					if (t.closeDoor()) flag++;
 				}
 			}
 		}
@@ -620,7 +622,6 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 						t.inMind = true;
 						if (line2.length >= overview) {
 							// тайл слишком далеко, убираем в тень
-							t.visible = false;
 							shadow = true;
 						}
 
@@ -631,7 +632,6 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 				// убираем в тень
 				if (t.visible) {
 					if (!quarter) {
-						t.visible = false;
 						shadow = true;
 					}
 				}
@@ -678,12 +678,12 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 	};
 
-	Level.prototype.getTileOnCoord = function(e) {
+	Level.prototype._getTileOnCoord = function(e) {
 
-		var ex = parseInt(e.target.getAttribute("data-x")) - this._sizes.scrHalfWidth + 1,
-			ey = parseInt(e.target.getAttribute("data-y")) - this._sizes.scrHalfHeight + 1;
+		var ex = parseInt(e.target.getAttribute("data-x")) + this._position.x - this._sizes.scrHalfWidth,
+			ey = parseInt(e.target.getAttribute("data-y")) + this._position.y - this._sizes.scrHalfHeight;
 
-		return [ex, ey];
+		return this._map[ey] ? this._map[ey][ex] ? this._map[ey][ex] : null : null;
 
 	};
 

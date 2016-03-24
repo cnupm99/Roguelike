@@ -21,5 +21,15 @@
 		"you close doors",
 		"no doors to close around",
 		"you wait something..."
+	],
+	"tiles": [
+		"you see ",
+		"you remember ",
+		"effects",
+		"stone wall",
+		"stone floor",
+		"closed door",
+		"opened door",
+		"yourself"
 	]
 }

@@ -41,6 +41,7 @@ define(["screenObject"], function(screenObject) {
 				this._visibleColor = "#FFF";
 				this._inMindColor = "#222";
 				this.passability = false;
+				this._desc = 3;
 				break;
 				// каменный пол
 			case 2:
@@ -48,6 +49,7 @@ define(["screenObject"], function(screenObject) {
 				this._visibleColor = "#FFF";
 				this._inMindColor = "#222";
 				this.passability = true;
+				this._desc = 4;
 				break;
 				// каменная дверь
 			case 3:
@@ -55,7 +57,8 @@ define(["screenObject"], function(screenObject) {
 				this._visibleColor = "#AFA";
 				this._inMindColor = "#222";
 				this.passability = false;
-				this.closed = true;
+				this._desc = 5;
+				this._closed = true;
 				break;
 		}
 
@@ -68,6 +71,30 @@ define(["screenObject"], function(screenObject) {
 	Tile.prototype.setRepresent = function(represent) {
 
 		this._represent = represent;
+
+	};
+
+	Tile.prototype.openDoor = function() {
+
+		if (!this._closed) return false;
+
+		this._closed = false;
+		this.passability = true;
+		this._represent = "`";
+		this._desc = 6;
+		return true;
+
+	};
+
+	Tile.prototype.closeDoor = function() {
+
+		if (this._closed) return false;
+
+		this._closed = true;
+		this.passability = false;
+		this._represent = "+";
+		this._desc = 5;
+		return true;
 
 	};
 

@@ -5,20 +5,20 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 	document.body.add("div", {
 		id: "info",
 		innerHTML: "Wellcome to Random Roguelike game. If you dont know what to do, press F1."
-	}).add("div", {
+	});
+	document.body.add("div", {
 		id: "desc"
 	});
-
 	document.body.add("div", {
 		id: "main"
 	});
 
-	var loader = new ResLoader(),
-		lang = {};
+	var loader = new ResLoader();
+	window.lang = {};
 
 	loader.loadLang("en", function(data) {
 
-		lang = data;
+		window.lang = data;
 		// console.log(lang);
 		document.body.addEventListener("keypress", onKeyPress);
 		// document.body.addEventListener("click", onMouseClick);
@@ -35,7 +35,7 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 
 	function onMouseClick(e) {
 		// console.log(e);
-		console.log(l.getTileOnCoord(e));
+		// console.log(l.getTileOnCoord(e));
 	}
 
 	function onKeyPress(e) {
