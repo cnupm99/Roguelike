@@ -337,6 +337,14 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 		}
 
+		smallRooms.forEach(function(room) {
+
+			if (room.doors.length == 1) {
+				if (Math.random() * 100 < 20) this._map[room.doors[0][1]][room.doors[0][0]].setHidden();
+			}
+
+		}, this);
+
 	};
 
 	/**
@@ -544,7 +552,7 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 	 * @param  {number} side     сторона в которую смотрим
 	 * @public
 	 */
-	Level.prototype.checkVisible = function(overview, shadow, side) {
+	Level.prototype.checkVisible = function(overview, shadow, side, discover, logFunc) {
 
 		var minY = this._position.y - shadow,
 			maxY = this._position.y + shadow,
@@ -637,7 +645,18 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 				}
 
 				// установить эффект тени
-				if (shadow) t.setEffect(new TileEffect("shadow"));
+				if (shadow) {
+					t.setEffect(new TileEffect("shadow"));
+				} else {
+					// может быть это скрытая дверь?
+					if ((t.type == this._wallType) && (t.hidden)) {
+						// пробуем ее обнаружить
+						if (t.checkHidden(discover)) {
+							logFunc(lang.logs[21], 2);
+						}
+					}
+
+				}
 
 			}
 		}

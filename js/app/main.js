@@ -30,7 +30,7 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 
 	var l = new Level();
 	l.setHeroPosition(h);
-	l.checkVisible(h.overview, h.shadow, h.side);
+	l.checkVisible(h.overview, h.shadow, h.side, h.getDiscover(), addText);
 	drawField();
 
 	function onMouseClick(e) {
@@ -146,7 +146,7 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 		}
 
 		// console.time("visible");
-		l.checkVisible(h.overview, h.shadow, h.side);
+		l.checkVisible(h.overview, h.shadow, h.side, h.getDiscover(), addText);
 		// console.timeEnd("visible");
 
 	}
@@ -161,6 +161,9 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 		switch (type) {
 			case 1:
 				text = "<font color='#555'>" + text + "</font>";
+				break;
+			case 2:
+				text = "<font color='#0D0'>" + text + "</font>";
 				break;
 		}
 		d("info").innerHTML = text + "<br>" + d("info").innerHTML;

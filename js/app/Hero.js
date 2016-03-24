@@ -21,10 +21,22 @@ define(["screenObject"], function(screenObject) {
 		this.side = 3;
 		this._desc = 7;
 
+		this.wisdom = 18;
+
+		this.abilitys = {
+			"observation": 3
+		};
+
 	}
 
 	Hero.prototype = Object.create(screenObject.prototype);
 	Hero.prototype.constructor = Hero;
+
+	Hero.prototype.getDiscover = function() {
+
+		return this.wisdom * 2 + this.abilitys["observation"] * 10;
+
+	};
 
 	return Hero;
 

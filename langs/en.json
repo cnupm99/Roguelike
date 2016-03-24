@@ -20,7 +20,8 @@
 		"you close door",
 		"you close doors",
 		"no doors to close around",
-		"you wait something..."
+		"you wait something...",
+		"you discover closed door!"
 	],
 	"tiles": [
 		"you see ",

@@ -38,6 +38,9 @@ define(function() {
 		 * @private
 		 */
 		this._inMindColor = "#222";
+		this.hidden = false;
+		this.hiddenPower = 0;
+		this._hiddenColor = "#FFF";
 		/**
 		 * Проходимость тайла
 		 * @type {Boolean}
@@ -113,7 +116,7 @@ define(function() {
 
 		if (this.inMind) {
 
-			var color = this.visible ? this._visibleColor : this._inMindColor,
+			var color = this.visible ? this.hidden ? this._hiddenColor : this._visibleColor : this._inMindColor,
 				z = 0;
 
 			// если на тайл действуют эффекты, то изменяем цвет

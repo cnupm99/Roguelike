@@ -98,6 +98,26 @@ define(["screenObject"], function(screenObject) {
 
 	};
 
+	Tile.prototype.setHidden = function() {
+
+		this.hidden = true;
+		this.hiddenPower = 1 + ~~(Math.randow * 99);
+		this._represent = "#";
+
+	};
+
+	Tile.prototype.checkHidden = function(discover) {
+
+		if (discover >= this.hiddenPower) {
+
+			this.hidden = false;
+			this._represent = "+";
+			return true;
+
+		} else return false;
+
+	};
+
 	return Tile;
 
 });
