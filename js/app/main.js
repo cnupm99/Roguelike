@@ -16,6 +16,8 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 	var loader = new ResLoader();
 	window.lang = {};
 
+	window.difficult = 0;
+
 	var h = new Hero();
 
 	var l = new Level();
