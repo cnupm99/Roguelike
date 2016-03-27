@@ -16,6 +16,10 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 	var loader = new ResLoader();
 	window.lang = {};
 
+	var h = new Hero();
+
+	var l = new Level();
+
 	loader.loadLang("en", function(data) {
 
 		window.lang = data;
@@ -24,14 +28,11 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 		// document.body.addEventListener("click", onMouseClick);
 		d("main").addEventListener("click", onMouseClick);
 
+		l.setHeroPosition(h);
+		l.checkVisible(h.overview, h.shadow, h.side, h.getDiscover(), addText);
+		drawField();
+
 	});
-
-	var h = new Hero();
-
-	var l = new Level();
-	l.setHeroPosition(h);
-	l.checkVisible(h.overview, h.shadow, h.side, h.getDiscover(), addText);
-	drawField();
 
 	function onMouseClick(e) {
 		// console.log(e);

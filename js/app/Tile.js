@@ -101,7 +101,7 @@ define(["screenObject"], function(screenObject) {
 	Tile.prototype.setHidden = function() {
 
 		this.hidden = true;
-		this.hiddenPower = 1 + ~~(Math.randow * 99);
+		this.hiddenPower = 1 + ~~(Math.random() * 99);
 		this._represent = "#";
 
 	};

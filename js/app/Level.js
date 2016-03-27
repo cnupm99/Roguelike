@@ -647,15 +647,16 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 				// установить эффект тени
 				if (shadow) {
 					t.setEffect(new TileEffect("shadow"));
-				} else {
-					// может быть это скрытая дверь?
-					if ((t.type == this._wallType) && (t.hidden)) {
+				}
+
+				// может быть это скрытая дверь?
+				if ((t.visible) && (!shadow)) {
+					if ((t.type == this._doorType) && (t.hidden)) {
 						// пробуем ее обнаружить
 						if (t.checkHidden(discover)) {
-							logFunc(lang.logs[21], 2);
+							logFunc(lang.log[21], 2);
 						}
 					}
-
 				}
 
 			}
