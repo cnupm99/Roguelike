@@ -505,6 +505,12 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 	};
 
+	Level.prototype._findPath = function(x0, y0, x1, y1) {
+
+		
+
+	};
+
 	/**
 	 * Возвращает проходимость тайла по указанным координатам
 	 * @param  {Object|number} arg1 координата х тайла либо объект с координатами
