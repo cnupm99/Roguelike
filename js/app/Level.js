@@ -57,11 +57,7 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		 * @type {Array}
 		 * @private
 		 */
-		this._map = [];
-		// создаем двумерный массив
-		for (var i = 0; i < this._sizes.height; i++) {
-			this._map[i] = [];
-		}
+		this._map = new Array(this._sizes.height).fill(new Array(this._sizes.width).fill(0));
 
 		/**
 		 * Массив элементов span для отображения информации на экране
@@ -69,13 +65,17 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		 */
 		this._screen = [];
 		for (var i = 0; i < this._sizes.scrHeight; i++) {
+
 			this._screen[i] = [];
 			for (var g = 0; g < this._sizes.scrWidth; g++) {
+
 				var s = d("main").add("span");
 				s.setAttribute("data-x", g);
 				s.setAttribute("data-y", i);
 				this._screen[i][g] = s;
+
 			}
+
 			d("main").add("br");
 		}
 
@@ -122,14 +122,24 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		// Старт анимации
 		if (this._needAnimation) this._animator = setInterval(this._animate.bind(this), this._animationSpeed);
 
+		// Добавляем события мыши
 		d("main").addEventListener("mouseover", this._mouseover.bind(this));
 		d("main").addEventListener("mouseout", this._mouseout);
 
 	}
 
+	/**
+	 * Мышь над тайлом
+	 * @param  {event} e событие мыши
+	 * @private
+	 */
 	Level.prototype._mouseover = function(e) {
 
+		// меняем цвет фона
 		e.target.style.backgroundColor = "#222";
+
+		// выводим описание
+		// если тайл в памяти
 
 		var t = this._getTileOnCoord(e);
 		if (t === null) return;
@@ -140,6 +150,11 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 	};
 
+	/**
+	 * Мышь ушла с тайла
+	 * @param  {event} e событие мыши
+	 * @private
+	 */
 	Level.prototype._mouseout = function(e) {
 
 		e.target.style.backgroundColor = "#000";
@@ -156,8 +171,10 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 		for (var i = 0; i < this._sizes.height; i++) {
 			for (var g = 0; g < this._sizes.width; g++) {
+
 				var t = this._map[i][g];
 				if (t.needAnimation) t.animate();
+
 			}
 		}
 
@@ -173,13 +190,18 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		// если нужно отменяем их действие
 		for (var i = 0; i < this._sizes.height; i++) {
 			for (var g = 0; g < this._sizes.width; g++) {
+
 				var t = this._map[i][g];
 				t.effects.forEach(function(effect, i) {
+
 					effect.moves++;
 					if (effect.moves == effect.duration) {
+
 						t.effects.splice(i, 1);
 						if (t.effects.length == 0) t.needAnimation = false;
+
 					}
+
 				});
 			}
 		}
@@ -337,6 +359,7 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 		}
 
+		// добавляем скрытие двери
 		smallRooms.forEach(function(room) {
 
 			if (room.doors.length == 1) {
@@ -370,28 +393,6 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		this._map[y][x] = new Tile(type);
 
 	};
-
-	/**
-	 * Возвращает тайл по указанным координатам
-	 * @param  {Object|number} arg1 координата х тайла либо объект с координатами
-	 * @param  {number|null} arg2 координата у тайла либо null
-	 * @return {number}      тайл
-	 * @private
-	 */
-	/*Level.prototype.getTile = function(arg1, arg2) {
-
-		var x, y;
-		if (typeof(arg1) == "Object") {
-			x = arg1.x || arg1.x0 || arg1.left || 0;
-			y = arg1.y || arg1.y0 || arg1.top || 0;
-		} else {
-			x = arg1;
-			y = arg2;
-		}
-
-		return this._map[y][x];
-
-	};*/
 
 	/**
 	 * Открыть дверь по заданным координатам
@@ -429,10 +430,12 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 		for (var i = minY; i <= maxY; i++) {
 			for (var g = minX; g <= maxX; g++) {
+
 				var t = this._map[i][g];
 				if (t.type == this._doorType) {
 					if (t.closeDoor()) flag++;
 				}
+
 			}
 		}
 
@@ -463,6 +466,7 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		// заполнение тайлами
 		for (var i = y0; i < y1; i++) {
 			for (var g = x0; g < x1; g++) {
+				//this._setTile(g, i, type);
 				this._map[i][g] = new Tile(type);
 			}
 		}
@@ -507,7 +511,7 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 	Level.prototype._findPath = function(x0, y0, x1, y1) {
 
-		
+
 
 	};
 
@@ -704,6 +708,12 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 	};
 
+	/**
+	 * Возвращает тайл под мышью
+	 * @param  {event} e событие мыши
+	 * @return {Tile}   тайл под мышью
+	 * @private
+	 */
 	Level.prototype._getTileOnCoord = function(e) {
 
 		var ex = parseInt(e.target.getAttribute("data-x")) + this._position.x - this._sizes.scrHalfWidth,
