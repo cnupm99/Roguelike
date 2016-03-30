@@ -516,8 +516,8 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		function getNextPlace(dx, dy) {
 			for (var i = dy - 1; i <= dy + 1; i++) {
 				for (var g = dx - 1; g <= dx + 1; g++) {
-					if ((i >= 0) && (g >= 0) && (i < arr.length) && (g < arr[i].length)) {
-						if (pathes[i][g] == 0) return {
+					if ((i >= 0) && (g >= 0) && (i < pathes.length) && (g < pathes[i].length)) {
+						if ((pathes[i][g] == 0)&&(this._map[i][g])) return {
 							x: g,
 							y: i
 						};
@@ -546,7 +546,7 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 			var t = getNextPlace(place.x, place.y);
 			if (t) {
 
-				pathes[t[1]][t[0]] = pathes[place.y][place.x] + 1;
+				pathes[t.y][t.x] = pathes[place.y][place.x] + 1;
 				places.push(t);
 
 			} else {
