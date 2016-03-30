@@ -513,7 +513,49 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 	Level.prototype._findPath = function(x0, y0, x1, y1) {
 
+		function getNextPlace(dx, dy) {
+			for (var i = dy - 1; i <= dy + 1; i++) {
+				for (var g = dx - 1; g <= dx + 1; g++) {
+					if ((i >= 0) && (g >= 0) && (i < arr.length) && (g < arr[i].length)) {
+						if (pathes[i][g] == 0) return {
+							x: g,
+							y: i
+						};
+					}
+				}
+			}
+			return false;
+		}
 
+		var pathes = [],
+			place = {
+				x: x0,
+				y: y0
+			},
+			places = [];
+
+		for (var i = 0; i < this._sizes.height) {
+			pathes[i] = [];
+			for (var g = 0; g < this.width; g++) {
+				pathes[i][g] = 0;
+			}
+		}
+
+		while ((place.x != x1) || (place.y != y1)) {
+
+			var t = getNextPlace(place.x, place.y);
+			if (t) {
+
+				pathes[t[1]][t[0]] = pathes[place.y][place.x] + 1;
+				places.push(t);
+
+			} else {
+
+				place = places.pop();
+
+			}
+
+		}
 
 	};
 
