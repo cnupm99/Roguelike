@@ -57,7 +57,10 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		 * @type {Array}
 		 * @private
 		 */
-		this._map = new Array(this._sizes.height).fill(new Array(this._sizes.width).fill(0));
+		this._map = [];
+		for (var i = 0; i < this._sizes.height; i++) {
+			this._map[i] = [];
+		}
 
 		/**
 		 * Массив элементов span для отображения информации на экране
@@ -466,8 +469,7 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		// заполнение тайлами
 		for (var i = y0; i < y1; i++) {
 			for (var g = x0; g < x1; g++) {
-				//this._setTile(g, i, type);
-				this._map[i][g] = new Tile(type);
+				this._setTile(g, i, type);
 			}
 		}
 

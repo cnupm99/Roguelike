@@ -52,41 +52,6 @@ define(function() {
 
 	}
 
-	if (!Array.prototype.fill) {
-
-		/**
-		 * Добавляем полифил для метода Array.fill
-		 * @param  {*} value значение для заливки массива
-		 * @return {Array}       массив залитый значениями
-		 */
-		Array.prototype.fill = function(value) {
-
-			if (this == null) {
-				throw new TypeError('this is null or not defined');
-			}
-
-			var O = Object(this),
-				len = O.length >>> 0,
-				start = arguments[1],
-				relativeStart = start >> 0,
-				k = relativeStart < 0 ? Math.max(len + relativeStart, 0) : Math.min(relativeStart, len),
-				end = arguments[2],
-				relativeEnd = end === undefined ? len : end >> 0,
-				final = relativeEnd < 0 ? Math.max(len + relativeEnd, 0) : Math.min(relativeEnd, len);
-
-			while (k < final) {
-
-				O[k] = value;
-				k++;
-
-			}
-
-			return O;
-
-		};
-
-	}
-
 	/**
 	 * Псевдоним для document.getElementById
 	 * @param  {string} id айди элемента
