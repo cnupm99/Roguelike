@@ -524,29 +524,6 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 	};
 
-	Level.prototype._getNextNeighbor = function(place, pathes, type) {
-
-		var dx = place[0],
-			dy = place[1];
-
-		for (var i = dy - 1; i <= dy + 1; i++) {
-			for (var g = dx - 1; g <= dx + 1; g++) {
-
-				var flag = (i >= 0) && (g >= 0) && (i < this._sizes.height) && (g < this._sizes.width);
-
-				if (!flag) continue;
-
-				flag = type ? (pathes[i][g] == 0) && (this._map[i][g].type != this._wallType) : (pathes[i][g] + 1 == pathes[dy][dx]);
-
-				if (flag) return [g, i];
-
-			}
-		}
-
-		return false;
-
-	};
-
 	/**
 	 * Нахождение кратчайшего пути между двумя точками
 	 * @param  {number} x0 координата х первой точки
@@ -556,6 +533,37 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 	 * @return {Array}    массив с координатами точек пути
 	 */
 	Level.prototype._findPath = function(x0, y0, x1, y1) {
+
+		/**
+		 * Возвращает соседнее поле
+		 * @param  {Boolean} type если true, то возвращает поле с путем 0,
+		 *  если false, то возвращает поле с путем -1 от текущего
+		 * @return {Array}      координаты следующего поля
+		 */
+		function getNextNeighbor(type) {
+
+			var dx = place[0],
+				dy = place[1];
+
+			// смежные поля
+			for (var i = dy - 1; i <= dy + 1; i++) {
+				for (var g = dx - 1; g <= dx + 1; g++) {
+
+					// контроль по размерам
+					var flag = (i >= 0) && (g >= 0) && (i < this._sizes.height) && (g < this._sizes.width);
+
+					if (!flag) continue;
+
+					flag = type ? (pathes[i][g] == 0) && (this._map[i][g].type != this._wallType) : (pathes[i][g] + 1 == pathes[dy][dx]);
+
+					if (flag) return [g, i];
+
+				}
+			}
+
+			return false;
+
+		}
 
 		/**
 		 * Массив с расстоянем до начальной точки
@@ -594,7 +602,7 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		// пока не достигли второй точки
 		while (flag) {
 
-			var t = this._getNextNeighbor(place, pathes, true);
+			var t = getNextNeighbor.call(this, true);
 			if (t) {
 
 				// увличиваем путь на 1
@@ -625,7 +633,7 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 			// текущая точка
 			result.push(place);
 			// следующая точка
-			place = this._getNextNeighbor(place, pathes, false);
+			place = getNextNeighbor.call(this, false);
 			// если дошли до начала
 			if ((place[0] == x0) && (place[1] == y0)) flag = false;
 
@@ -823,9 +831,9 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 					s.style.color = t.getColor();
 				}
 
-				if(this.way.some(function(e) {
-					return (e[0] == tx) && (e[1] == ty);
-				})) {
+				if (this.way.some(function(e) {
+						return (e[0] == tx) && (e[1] == ty);
+					})) {
 					s.style.backgroundColor = "#F00";
 				} else {
 					s.style.backgroundColor = "#000";
