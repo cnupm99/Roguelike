@@ -17,6 +17,8 @@ define(["screenObject"], function(screenObject) {
 		 * @type {number}
 		 *  1 - простая кирпичная стена
 		 *  2 - простой кирпичный пол
+		 *  3 - простая каменная дверь
+		 *  4 - лестница вниз
 		 * @public
 		 */
 		this.type = type;
@@ -59,6 +61,14 @@ define(["screenObject"], function(screenObject) {
 				this.passability = false;
 				this._desc = 5;
 				this._closed = true;
+				break;
+				// лестница вниз
+			case 4:
+				this._represent = ">";
+				this._visibleColor = "#FFF";
+				this._inMindColor = "#222";
+				this.passability = true;
+				this._desc = 8;
 				break;
 		}
 

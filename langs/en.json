@@ -31,6 +31,7 @@
 		"stone floor",
 		"closed door",
 		"opened door",
-		"yourself"
+		"yourself",
+		"stairs down"
 	]
 }

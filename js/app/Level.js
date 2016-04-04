@@ -371,6 +371,19 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 		}, this);
 
+		// генерация лестницы вниз
+		do {
+			var dx = ~~(Math.random() * this._sizes.width),
+				dy = ~~(Math.random() * this._sizes.height);
+		} while (this._map[dy][dx].type != this._floorType);
+
+		this._map[dy][dx] = new Tile(4);
+
+		this.way = this._findPath(this._position.x, this._position.y, dx, dy);
+
+		console.log(dx, dy);
+		console.log(this.way);
+
 	};
 
 	/**
@@ -511,51 +524,114 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 	};
 
-	Level.prototype._findPath = function(x0, y0, x1, y1) {
+	Level.prototype._getNextNeighbor = function(place, pathes, type) {
 
-		function getNextPlace(dx, dy) {
-			for (var i = dy - 1; i <= dy + 1; i++) {
-				for (var g = dx - 1; g <= dx + 1; g++) {
-					if ((i >= 0) && (g >= 0) && (i < pathes.length) && (g < pathes[i].length)) {
-						if ((pathes[i][g] == 0)&&(this._map[i][g])) return {
-							x: g,
-							y: i
-						};
-					}
-				}
+		var dx = place[0],
+			dy = place[1];
+
+		for (var i = dy - 1; i <= dy + 1; i++) {
+			for (var g = dx - 1; g <= dx + 1; g++) {
+
+				var flag = (i >= 0) && (g >= 0) && (i < this._sizes.height) && (g < this._sizes.width);
+
+				if (!flag) continue;
+
+				flag = type ? (pathes[i][g] == 0) && (this._map[i][g].type != this._wallType) : (pathes[i][g] + 1 == pathes[dy][dx]);
+
+				if (flag) return [g, i];
+
 			}
-			return false;
 		}
 
-		var pathes = [],
-			place = {
-				x: x0,
-				y: y0
-			},
-			places = [];
+		return false;
 
-		for (var i = 0; i < this._sizes.height) {
+	};
+
+	/**
+	 * Нахождение кратчайшего пути между двумя точками
+	 * @param  {number} x0 координата х первой точки
+	 * @param  {number} y0 координата у первой точки
+	 * @param  {number} x1 координата х второй точки
+	 * @param  {number} y1 координата у второй точки
+	 * @return {Array}    массив с координатами точек пути
+	 */
+	Level.prototype._findPath = function(x0, y0, x1, y1) {
+
+		/**
+		 * Массив с расстоянем до начальной точки
+		 * @type {Array}
+		 */
+		var pathes = [],
+			/**
+			 * Координаты текущей точки
+			 * @type {Array}
+			 */
+			place = [x0, y0],
+			/**
+			 * Массив незаконченных полей
+			 * @type {Array}
+			 */
+			places = [],
+			/**
+			 * Массив результат
+			 * @type {Array}
+			 */
+			result = [];
+
+		// начальное нуление всех точек
+		for (var i = 0; i < this._sizes.height; i++) {
 			pathes[i] = [];
-			for (var g = 0; g < this.width; g++) {
+			for (var g = 0; g < this._sizes.width; g++) {
 				pathes[i][g] = 0;
 			}
 		}
 
-		while ((place.x != x1) || (place.y != y1)) {
+		/**
+		 * Признак достижения второй точки
+		 * @type {Boolean}
+		 */
+		var flag = true;
+		// пока не достигли второй точки
+		while (flag) {
 
-			var t = getNextPlace(place.x, place.y);
+			var t = this._getNextNeighbor(place, pathes, true);
 			if (t) {
 
-				pathes[t.y][t.x] = pathes[place.y][place.x] + 1;
-				places.push(t);
+				// увличиваем путь на 1
+				pathes[t[1]][t[0]] = pathes[place[1]][place[0]] + 1;
+				// это конечная точка?
+				if ((t[0] == x1) && (t[1] == y1)) {
+					flag = false; // выход
+				} else {
+					places.push(t); // добавляем в массив незаконченных точек
+				}
 
 			} else {
 
-				place = places.pop();
+				// достаем первую из незаконченных точек
+				place = places.shift();
 
 			}
 
 		}
+
+		// теперь начинаем с конца
+		place = [x1, y1];
+		// пока не достигнем начала
+		flag = true;
+
+		while (flag) {
+
+			// текущая точка
+			result.push(place);
+			// следующая точка
+			place = this._getNextNeighbor(place, pathes, false);
+			// если дошли до начала
+			if ((place[0] == x0) && (place[1] == y0)) flag = false;
+
+		}
+
+		return result;
 
 	};
 
@@ -745,6 +821,14 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 				} else {
 					s.innerHTML = t.getText();
 					s.style.color = t.getColor();
+				}
+
+				if(this.way.some(function(e) {
+					return (e[0] == tx) && (e[1] == ty);
+				})) {
+					s.style.backgroundColor = "#F00";
+				} else {
+					s.style.backgroundColor = "#000";
 				}
 
 			}
