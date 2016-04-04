@@ -22,6 +22,22 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 		this._type = options.type || 0;
 
 		/**
+		 * Уровень сложности
+		 *  0 - легко
+		 *  1 - норма
+		 *  2 - сложно
+		 *  3 - хардкор
+		 * @type {number}
+		 */
+		this._difficult = options.difficult || 1;
+
+		/**
+		 * Максимальная сила поиска игрока
+		 * @type {number}
+		 */
+		this._maxDiscover = options.maxDiscover || 100;
+
+		/**
 		 * Размер шрифта в vh
 		 * @type {number}
 		 * @private
@@ -362,15 +378,6 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 		}
 
-		// добавляем скрытие двери
-		smallRooms.forEach(function(room) {
-
-			if (room.doors.length == 1) {
-				if (Math.random() * 100 < 20) this._map[room.doors[0][1]][room.doors[0][0]].setHidden();
-			}
-
-		}, this);
-
 		// генерация лестницы вниз
 		do {
 			var dx = ~~(Math.random() * this._sizes.width),
@@ -379,10 +386,65 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 		this._map[dy][dx] = new Tile(4);
 
-		this.way = this._findPath(this._position.x, this._position.y, dx, dy);
+		// путь до выхода
+		var way = this._findPath(this._position.x, this._position.y, dx, dy),
+			maxHiddenPower;
 
-		console.log(dx, dy);
-		console.log(this.way);
+		// определяем максимальную силу скрытия
+		switch (this._difficult) {
+			case 0:
+				maxHiddenPower = this._maxDiscover + 5;
+				break;
+			case 1:
+				maxHiddenPower = this._maxDiscover + 10;
+				break;
+			case 2:
+				maxHiddenPower = this._maxDiscover + 20;
+				break;
+			case 3:
+				maxHiddenPower = 100;
+				break;
+		}
+
+		// добавляем скрытые двери
+		smallRooms.forEach(function(room) {
+
+			// в комнате одна комната
+			if (room.doors.length == 1) {
+
+				var rx = room.doors[0][0],
+					ry = room.doors[0][1],
+					// будем ее скрывать или нет
+					hide = Math.random() * 100 < 20;
+
+				if (hide) {
+
+					var power = 1 + ~~(Math.random() * 99),
+						// находится ли эта дверь на пути к выходу
+						onWay = way.some(function(t) {
+							return (t[0] == rx) && (t[1] == ry);
+						});
+
+					// корректируем сложность в зависимости от уровня сложности
+					// и того, находится ли эта дверь на пути к выходу
+					switch(this._difficult) {
+						case 0:
+							power = power > maxHiddenPower ? maxHiddenPower : power;
+							break;
+						case 1:
+						case 2:
+							power = onWay ? power > maxHiddenPower ? maxHiddenPower : power : power;
+							break;
+					}
+					
+					// скрываем дверь
+					this._map[ry][rx].setHidden(power);
+
+				}
+
+			}
+
+		}, this);
 
 	};
 
@@ -831,13 +893,14 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 					s.style.color = t.getColor();
 				}
 
-				if (this.way.some(function(e) {
+				// отображение кратчайшего пути до выхода на следующий уровень
+				/*if (this.way.some(function(e) {
 						return (e[0] == tx) && (e[1] == ty);
 					})) {
 					s.style.backgroundColor = "#F00";
 				} else {
 					s.style.backgroundColor = "#000";
-				}
+				}*/
 
 			}
 		}

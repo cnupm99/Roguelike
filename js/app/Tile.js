@@ -108,17 +108,29 @@ define(["screenObject"], function(screenObject) {
 
 	};
 
-	Tile.prototype.setHidden = function() {
+	Tile.prototype.setHidden = function(hiddenPower) {
 
 		this.hidden = true;
-		this.hiddenPower = 1 + ~~(Math.random() * 99);
+		this.hiddenPower = hiddenPower;
 		this._represent = "#";
 
 	};
 
 	Tile.prototype.checkHidden = function(discover) {
 
-		if (discover >= this.hiddenPower) {
+		var bonus = 0,
+			check = ~~(Math.random() * 1000);
+
+		// рассчитываем случайный бонус к открытию
+		if (check == 1) {
+			bonus = 20;
+		} else if (check < 10) {
+			bonus = 10;
+		} else if (check < 100) {
+			bonus = 5;
+		}
+
+		if (discover + bonus >= this.hiddenPower) {
 
 			this.hidden = false;
 			this._represent = "+";

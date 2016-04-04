@@ -27,6 +27,10 @@ define(["screenObject"], function(screenObject) {
 			"observation": 3
 		};
 
+		this.skills = {
+			"search": 0
+		}
+
 	}
 
 	Hero.prototype = Object.create(screenObject.prototype);
@@ -35,6 +39,12 @@ define(["screenObject"], function(screenObject) {
 	Hero.prototype.getDiscover = function() {
 
 		return this.wisdom * 2 + this.abilitys["observation"] * 10;
+
+	};
+
+	Hero.prototype.getMaxDiscover = function() {
+
+		return this.wisdom * 2 + this.abilitys["observation"] * 10 + this.skills["search"] * 10;
 
 	};
 
