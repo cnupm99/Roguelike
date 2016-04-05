@@ -16,14 +16,16 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 	var loader = new ResLoader();
 	window.lang = {};
 
-	var h = new Hero();
+	var h = new Hero(),
+		l,
+		animation;
 
-	var l = new Level({
+	/*var l = new Level({
 		width: 30,
 		height: 30,
 		difficult: 0,
 		maxDiscover: h.getMaxDiscover()
-	});
+	});*/
 
 	loader.loadLang("en", function(data) {
 
@@ -33,9 +35,10 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 		// document.body.addEventListener("click", onMouseClick);
 		d("main").addEventListener("click", onMouseClick);
 
-		l.setHeroPosition(h);
-		l.checkVisible(h.overview, h.shadow, h.side, h.getDiscover(), addText);
-		drawField();
+		newLevel();
+		// l.setHeroPosition(h);
+		// l.checkVisible(h.overview, h.shadow, h.side, h.getDiscover(), addText);
+		// drawField();
 
 	});
 
@@ -151,15 +154,40 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 			}
 		}
 
+		if (key == 62) {
+			if (l.stepDown()) {
+				addText(lang.log[22], 2);
+				newLevel();
+			}
+		}
+
 		// console.time("visible");
 		l.checkVisible(h.overview, h.shadow, h.side, h.getDiscover(), addText);
 		// console.timeEnd("visible");
 
 	}
 
+	function newLevel() {
+		cancelAnimationFrame(animation);
+		d("main").clr();
+		l = new Level({
+			width: 30,
+			height: 30,
+			difficult: 0,
+			maxDiscover: h.getMaxDiscover()
+		});
+		h.position = {
+			x: 1,
+			y: 1
+		}
+		l.setHeroPosition(h);
+		l.checkVisible(h.overview, h.shadow, h.side, h.getDiscover(), addText);
+		drawField();
+	}
+
 	function drawField() {
 		l.outText();
-		requestAnimationFrame(drawField);
+		animation = requestAnimationFrame(drawField);
 	}
 
 	function addText(text, type) {

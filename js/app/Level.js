@@ -118,12 +118,18 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 				 * @type {Number}
 				 */
 				this._doorType = 3;
+				/**
+				 * Тайл выхода с уровня
+				 * @type {Number}
+				 */
+				this._outType = 4;
 				this._generateRoomsMaze();
 				break;
 			case 1:
 				this._wallType = 1;
 				this._floorType = 2;
 				this._doorType = 3;
+				this._outType = 4;
 				this._generateRoomsMaze();
 				break;
 		}
@@ -923,6 +929,16 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 			ey = parseInt(e.target.getAttribute("data-y")) + this._position.y - this._sizes.scrHalfHeight;
 
 		return this._map[ey] ? this._map[ey][ex] ? this._map[ey][ex] : null : null;
+
+	};
+
+	/**
+	 * Возможен ли переход на другой уровень
+	 * @return {Boolean} true, если переход, иначе false
+	 */
+	Level.prototype.stepDown = function() {
+
+		return this._map[this._position.y][this._position.x].type == this._outType;
 
 	};
 
