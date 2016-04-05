@@ -56,10 +56,10 @@ define(["screenObject"], function(screenObject) {
 				// каменная дверь
 			case 3:
 				this._represent = "+";
-				this._visibleColor = "#AFA";
+				this._visibleColor = "#0F0";
 				this._inMindColor = "#222";
 				this.passability = false;
-				this._desc = 5;
+				this.desc = 5;
 				this._closed = true;
 				break;
 				// лестница вниз
@@ -91,7 +91,7 @@ define(["screenObject"], function(screenObject) {
 		this._closed = false;
 		this.passability = true;
 		this._represent = "`";
-		this._desc = 6;
+		this.desc = 6;
 		return true;
 
 	};
@@ -103,23 +103,21 @@ define(["screenObject"], function(screenObject) {
 		this._closed = true;
 		this.passability = false;
 		this._represent = "+";
-		this._desc = 5;
+		this.desc = 5;
 		return true;
 
 	};
 
-	Tile.prototype.setHidden = function(hiddenPower) {
-
-		this.hidden = true;
-		this.hiddenPower = hiddenPower;
-		this._represent = "#";
-
-	};
-
+	/**
+	 * Проверяем, не откроется ли скрытый объект
+	 * @param  {number} discover уровень поиска героя
+	 * @return {boolean}          true, если поиск успешен, иначе false
+	 */
 	Tile.prototype.checkHidden = function(discover) {
 
 		var bonus = 0,
-			check = ~~(Math.random() * 1000);
+			check = ~~(Math.random() * 1000),
+			hiddenPower = 0;
 
 		// рассчитываем случайный бонус к открытию
 		if (check == 1) {
@@ -130,10 +128,15 @@ define(["screenObject"], function(screenObject) {
 			bonus = 5;
 		}
 
-		if (discover + bonus >= this.hiddenPower) {
+		// мощность скрытия
+		this.effects.forEach(function(effect) {
+			if (effect.effectName == "hidden") hiddenPower = effect.hiddenPower;
+		});
 
-			this.hidden = false;
-			this._represent = "+";
+		if (discover + bonus >= hiddenPower) {
+
+			// убираем эффект скрытия
+			this.removeEffect("hidden");
 			return true;
 
 		} else return false;

@@ -21,7 +21,7 @@
 		"you close doors",
 		"no doors to close around",
 		"you wait something...",
-		"you discover hidden door!"
+		"you discover: "
 	],
 	"tiles": [
 		"you see ",

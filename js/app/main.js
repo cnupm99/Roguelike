@@ -19,6 +19,8 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 	var h = new Hero();
 
 	var l = new Level({
+		width: 30,
+		height: 30,
 		difficult: 0,
 		maxDiscover: h.getMaxDiscover()
 	});

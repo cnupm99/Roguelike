@@ -427,7 +427,7 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 					// корректируем сложность в зависимости от уровня сложности
 					// и того, находится ли эта дверь на пути к выходу
-					switch(this._difficult) {
+					switch (this._difficult) {
 						case 0:
 							power = power > maxHiddenPower ? maxHiddenPower : power;
 							break;
@@ -436,9 +436,13 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 							power = onWay ? power > maxHiddenPower ? maxHiddenPower : power : power;
 							break;
 					}
-					
+
 					// скрываем дверь
-					this._map[ry][rx].setHidden(power);
+					this._map[ry][rx].setEffect(new TileEffect("hidden", {
+						hiddenPower: power,
+						represent: "#",
+						desc: 3
+					}));
 
 				}
 
@@ -849,14 +853,14 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 					t.setEffect(new TileEffect("shadow"));
 				}
 
-				// может быть это скрытая дверь?
-				if ((t.visible) && (!shadow)) {
-					if ((t.type == this._doorType) && (t.hidden)) {
-						// пробуем ее обнаружить
-						if (t.checkHidden(discover)) {
-							logFunc(lang.log[21], 2);
-						}
+				// может быть это что-то скрытое?
+				if ((t.visible) && (!shadow) && (t.isEffect("hidden"))) {
+
+					// пробуем ее обнаружить
+					if (t.checkHidden(discover)) {
+						logFunc(lang.log[21] + lang.tiles[t.desc], 2);
 					}
+
 				}
 
 			}

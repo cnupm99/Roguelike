@@ -7,7 +7,9 @@ define(function() {
 	 * @param {string} effectName название эффекта
 	 * @constructor
 	 */
-	function TileEffect(effectName) {
+	function TileEffect(effectName, options) {
+
+		if (!options) options = {};
 
 		/**
 		 * Название эффекта
@@ -17,6 +19,7 @@ define(function() {
 		/**
 		 * Продолжительность действия в ходах
 		 * @type {Number}
+		 * @public
 		 */
 		this.moves = 0;
 		/**
@@ -26,6 +29,7 @@ define(function() {
 		this._stage = 0;
 
 		switch (effectName) {
+			// эффект тени
 			case "shadow":
 				/**
 				 * Максимальная продолжительность в ходах
@@ -47,7 +51,34 @@ define(function() {
 				 * Будет показан эффект с наибольшим индексом
 				 * @type {Number}
 				 */
-				this.z = 1;
+				this.z = 10;
+				/**
+				 * Видимый ли эффект
+				 * @type {Boolean}
+				 */
+				this.visible = true;
+				break;
+			// эффект скрытности
+			case "hidden":
+				this.duration = -1;
+				this.visible = false;
+				this.color = "#FFF";
+				/**
+				 * Сила скрытия
+				 * @type {number}
+				 */
+				this.hiddenPower = options.hiddenPower || 100;
+				/**
+				 * Вид скрытого объекта
+				 * @type {string}
+				 */
+				this.represent = options.represent || "#";
+				/**
+				 * Описание скрытого объекта
+				 * @type {number}
+				 */
+				this.desc = options.desc || 3;
+				this.z = 9;
 				break;
 		}
 
@@ -61,7 +92,7 @@ define(function() {
 
 		this._stage++;
 		if (this._stage % 2 == 1) {
-			this.color = "#808080"; 
+			this.color = "#808080";
 		} else this.color = "#777";
 
 	};

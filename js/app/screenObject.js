@@ -38,9 +38,6 @@ define(function() {
 		 * @private
 		 */
 		this._inMindColor = "#222";
-		this.hidden = false;
-		this.hiddenPower = 0;
-		this._hiddenColor = "#FFF";
 		/**
 		 * Проходимость тайла
 		 * @type {Boolean}
@@ -58,8 +55,11 @@ define(function() {
 		 * @type {Array}
 		 */
 		this.effects = [];
-
-		this._desc = 2;
+		/**
+		 * Номер описания тайла
+		 * @type {Number}
+		 */
+		this.desc = 2;
 
 	}
 
@@ -98,31 +98,65 @@ define(function() {
 	};
 
 	/**
+	 * Проверяет, есть ли на тайле данный эффект
+	 * @param  {string}  effectName имя эффекта
+	 * @return {Boolean}            true, если эффект есть, иначе false
+	 * @public
+	 */
+	screenObject.prototype.isEffect = function(effectName) {
+
+		return this.effects.some(function(effect) {
+
+			return effect.effectName == effectName;
+
+		});
+
+	};
+
+	/**
 	 * Функция возвращает текстовое представление тайла
 	 * @return {string}
 	 * @public
 	 */
 	screenObject.prototype.getText = function() {
 
-		return this.visible ? this._represent : this.inMind ? this._represent : "&nbsp;";
+		var text = this.visible ? this._represent : this.inMind ? this._represent : "&nbsp;",
+			z = 0;
+
+		// если на тайл действуют эффекты, то изменяем представление
+		this.effects.forEach(function(effect) {
+
+			if ((effect.z >= z) && (effect.represent)) {
+
+				z = effect.z;
+				text = effect.represent;
+
+			}
+
+		});
+
+		return text;
 
 	};
 
 	/**
 	 * Возвращаем цвет тайла в зависимости от видимости и эффектов
 	 * @return {string} цвет тайла в формате css
+	 * @public
 	 */
 	screenObject.prototype.getColor = function() {
 
 		if (this.inMind) {
 
-			var color = this.visible ? this.hidden ? this._hiddenColor : this._visibleColor : this._inMindColor,
+			var color = this.visible ? this._visibleColor : this._inMindColor,
 				z = 0;
+
+			if (!this.visible) return color;
 
 			// если на тайл действуют эффекты, то изменяем цвет
 			this.effects.forEach(function(effect) {
 
-				if (effect.z >= z) {
+				if ((effect.z >= z) && (effect.color)) {
 
 					z = effect.z;
 					color = effect.color;
@@ -149,24 +183,53 @@ define(function() {
 
 		this.effects.forEach(function(effect, i) {
 
-			effect.render();
+			if (effect.render) effect.render();
 
 		}, this);
 
 	};
 
+	/**
+	 * Возвращает описание тайла
+	 * @return {string} описание тайла
+	 * @public
+	 */
 	screenObject.prototype.getDesc = function() {
 
-		var desc = this.visible ? lang.tiles[0] : lang.tiles[1];
-		desc += lang.tiles[this._desc];
+		var desc = this.visible ? lang.tiles[0] : lang.tiles[1],
+			d = this.desc,
+			z = 0;
 
-		if (this.effects.length == 0) return desc;
+		// эффекты, меняющие описание
+		this.effects.forEach(function(effect) {
 
+			if ((effect.desc) && (effect.z >= z)) {
+
+				z = effect.z;
+				d = effect.desc;
+
+			}
+
+		});
+
+		desc += lang.tiles[d];
+
+		// вычисляем количество видимых эффектов
+		var visibleEffects = 0;
+		this.effects.forEach(function(effect) {
+			if (effect.visible) visibleEffects++;
+		});
+		if (visibleEffects == 0) return desc;
+
+		// добавляем описания видимых эффектов
 		desc += "; " + lang.tiles[2] + ": ";
-		this.effects.forEach(function(effect, i) {
-			desc += effect.effectName;
-			if (i < this.effects.length - 1) desc += ", ";
-		}, this);
+		this.effects.forEach(function(effect) {
+
+			if (effect.visible) {
+				desc += effect.effectName + "; ";
+			}
+
+		});
 
 		return desc;
 
