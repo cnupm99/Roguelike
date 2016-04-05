@@ -19,7 +19,7 @@ define(["screenObject"], function(screenObject) {
 		this.overview = 10;
 		this.shadow = 20;
 		this.side = 3;
-		this._desc = 7;
+		this.desc = 7;
 
 		this.wisdom = 18;
 
