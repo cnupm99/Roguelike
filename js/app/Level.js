@@ -332,7 +332,8 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 				// рисуем дверь
 				doorCoord = ~~(Math.random() * room.height);
-				this._setTile(room.x + newWallSize, room.y + doorCoord, this._doorType);
+				var t = this._setTile(room.x + newWallSize, room.y + doorCoord, this._doorType);
+				t.setEffect(new TileEffect("closed"));
 				newRoom1.doors.push([room.x + newWallSize, room.y + doorCoord]);
 				newRoom2.doors.push([room.x + newWallSize, room.y + doorCoord]);
 
@@ -363,7 +364,8 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 					height: 1
 				}, this._wallType);
 				doorCoord = ~~(Math.random() * room.width);
-				this._setTile(room.x + doorCoord, room.y + newWallSize, this._doorType);
+				var t = this._setTile(room.x + doorCoord, room.y + newWallSize, this._doorType);
+				t.setEffect(new TileEffect("closed"));
 				newRoom1.doors.push([room.x + doorCoord, room.y + newWallSize]);
 				newRoom2.doors.push([room.x + doorCoord, room.y + newWallSize]);
 
@@ -459,10 +461,11 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 	};
 
 	/**
-	 * Установить тайл в нужных координатах
+	 * Установить тайл в нужных координатах, возвращает установленный тайл
 	 * @param {Object|number} arg1 координата х тайла либо объект с координатами
 	 * @param {number} arg2 координата у тайла либо тип тайла
 	 * @param {number|null} arg3 тип тайла тибо null
+	 * @return {Tile} установленный тайл
 	 * @private
 	 */
 	Level.prototype._setTile = function(arg1, arg2, arg3) {
@@ -478,7 +481,9 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 			type = arg3;
 		}
 
-		this._map[y][x] = new Tile(type);
+		var t = new Tile(type);
+		this._map[y][x] = t;
+		return t;
 
 	};
 
@@ -733,7 +738,7 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 			y = arg2;
 		}
 
-		return this._map[y][x].passability;
+		return this._map[y][x].getPass();
 
 	};
 
@@ -830,9 +835,9 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 
 					// проверяем все тайлы на линии до данного тайла
 					t.visible = line1.every(function(point) {
-						return this._map[point[1]][point[0]].passability;
+						return this._map[point[1]][point[0]].getPass();
 					}, this) || line2.every(function(point) {
-						return this._map[point[1]][point[0]].passability;
+						return this._map[point[1]][point[0]].getPass();
 					}, this);
 
 					if (t.visible) {

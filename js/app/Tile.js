@@ -1,6 +1,6 @@
 "use strict";
 
-define(["screenObject"], function(screenObject) {
+define(["screenObject", "TileEffect"], function(screenObject, TileEffect) {
 
 	/**
 	 * Создание нового тайла
@@ -42,7 +42,7 @@ define(["screenObject"], function(screenObject) {
 				this._represent = "#";
 				this._visibleColor = "#FFF";
 				this._inMindColor = "#222";
-				this.passability = false;
+				this._passability = false;
 				this.desc = 3;
 				break;
 				// каменный пол
@@ -50,24 +50,23 @@ define(["screenObject"], function(screenObject) {
 				this._represent = ".";
 				this._visibleColor = "#FFF";
 				this._inMindColor = "#222";
-				this.passability = true;
+				this._passability = true;
 				this.desc = 4;
 				break;
 				// каменная дверь
 			case 3:
-				this._represent = "+";
+				this._represent = "`";
 				this._visibleColor = "#0F0";
 				this._inMindColor = "#222";
-				this.passability = false;
+				this._passability = true;
 				this.desc = 5;
-				this._closed = true;
 				break;
 				// лестница вниз
 			case 4:
 				this._represent = ">";
 				this._visibleColor = "#FFF";
 				this._inMindColor = "#222";
-				this.passability = true;
+				this._passability = true;
 				this.desc = 8;
 				break;
 		}
@@ -84,31 +83,27 @@ define(["screenObject"], function(screenObject) {
 
 	};
 
+	/**
+	 * Пытается открыть дверь на тайле
+	 * @return {Boolean} true, если открыть удалось, иначе false
+	 */
 	Tile.prototype.openDoor = function() {
 
 		if (this.isEffect("hidden")) return false;
 
-		if (!this._closed) return false;
-
-		this._closed = false;
-		this.passability = true;
-		this._represent = "`";
-		this.desc = 6;
-		return true;
+		return this.removeEffect("closed");
 
 	};
 
+	/**
+	 * Пытается закрыть дверь
+	 * @return {Boolean} true, если удалось закрыть, иначе false
+	 */
 	Tile.prototype.closeDoor = function() {
 
 		if (this.isEffect("hidden")) return false;
 
-		if (this._closed) return false;
-
-		this._closed = true;
-		this.passability = false;
-		this._represent = "+";
-		this.desc = 5;
-		return true;
+		return this.setEffect(new TileEffect("closed"));
 
 	};
 

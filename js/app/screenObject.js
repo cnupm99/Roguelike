@@ -41,9 +41,9 @@ define(function() {
 		/**
 		 * Проходимость тайла
 		 * @type {Boolean}
-		 * @public
+		 * @private
 		 */
-		this.passability = false;
+		this._passability = false;
 		/**
 		 * Нужна ли анимация
 		 * @type {Boolean}
@@ -53,19 +53,23 @@ define(function() {
 		/**
 		 * Действующие на тайл эффекты
 		 * @type {Array}
+		 * @public
 		 */
 		this.effects = [];
 		/**
 		 * Номер описания тайла
 		 * @type {Number}
+		 * public
 		 */
 		this.desc = 2;
 
 	}
 
 	/**
-	 * Добавить эффект тайлу, если такого нет
+	 * Добавить эффект тайлу и возвращает true, если такого нет. Если такой
+	 * эффект уже есть, возвращает false
 	 * @param {TileEffect} effect эффект
+	 * @return {Boolean} 
 	 * @public
 	 */
 	screenObject.prototype.setEffect = function(effect) {
@@ -75,25 +79,33 @@ define(function() {
 			})) {
 			this.effects.push(effect);
 			this.needAnimation = true;
-		}
+			return true;
+		} else return false;
 
 	};
 
 	/**
-	 * Удаляет эффект с тайла, если такой есть
+	 * Удаляет эффект с тайла, если такой есть. Если эффект удален, возвращает true.
+	 * Если такого эффекта нет, возвращает false
 	 * @param  {String} effectName название эффекта
+	 * @return {Boolean}
 	 * @public
 	 */
 	screenObject.prototype.removeEffect = function(effectName) {
 
+		var result = false;
+
 		this.effects.forEach(function(effect, i) {
 
 			if (effect.effectName == effectName) {
+				result = true;
 				this.effects.splice(i, 1);
 				if (this.effects.length == 0) this.needAnimation = false;
 			}
 
 		}, this);
+
+		return result;
 
 	};
 
@@ -232,6 +244,31 @@ define(function() {
 		});
 
 		return desc;
+
+	};
+
+	/**
+	 * Возвращает проходимость тайла с учетом всех эффектов
+	 * @return {Boolean} true, если тайл проходим, иначе false
+	 */
+	screenObject.prototype.getPass = function(){
+
+		var pass = this._passability,
+			z = 0;
+
+		// эффекты, меняющие проходимость
+		this.effects.forEach(function(effect) {
+
+			if ((effect.passability != "undefined") && (effect.z >= z)) {
+
+				z = effect.z;
+				pass = effect.passability;
+
+			}
+
+		});
+
+		return pass;
 
 	};
 

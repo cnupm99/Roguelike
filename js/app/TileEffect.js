@@ -80,6 +80,13 @@ define(function() {
 				this.desc = options.desc || 3;
 				this.z = 9;
 				break;
+			case "closed":
+				this.duration = -1;
+				this.visible = true;
+				this.passability = false;
+				this.represent = "+";
+				this.z = 9;
+				break;
 		}
 
 	}
