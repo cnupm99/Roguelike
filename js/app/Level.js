@@ -1,6 +1,6 @@
 "use strict";
 
-define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
+define(["d", "Tile", "TileEffect", "monsters"], function(d, Tile, TileEffect, monsters) {
 
 	/**
 	 * Новый уровень
@@ -453,6 +453,20 @@ define(["d", "Tile", "TileEffect"], function(d, Tile, TileEffect) {
 					}));
 
 				}
+
+			}
+
+		}, this);
+
+		// начинаем генерацию монстров
+
+		var m = monsters;
+
+		smallRooms.forEach(function(room) {
+
+			if (Math.random() * 100 < 40) {
+
+
 
 			}
 
