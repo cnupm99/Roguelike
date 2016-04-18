@@ -259,7 +259,7 @@ define(function() {
 		// эффекты, меняющие проходимость
 		this.effects.forEach(function(effect) {
 
-			if ((effect.passability != "undefined") && (effect.z >= z)) {
+			if ((effect.passability !== undefined) && (effect.z >= z)) {
 
 				z = effect.z;
 				pass = effect.passability;
