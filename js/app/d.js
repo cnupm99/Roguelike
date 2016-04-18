@@ -52,6 +52,25 @@ define(function() {
 
 	}
 
+	if (!window.rand) {
+
+		/**
+		 * Генерация рандомных чисел
+		 * Если на входе два параметра, возвращает случайное число в промежутке [param1; param2]
+		 * Если на входе один параметр, то генерирует случайное число от 0 до param1 и возвращает true,
+		 * если это число рано 1, иначе возвращает false
+		 * @param  {number} param1 нижняя или верхняя граница промежутка
+		 * @param  {number} param2 верхняя граница промежутка
+		 * @return {number|boolean}        значение в зависимости от параметров
+		 */
+		window.rand = function(param1, param2) {
+
+			return param2 ? param1 + ~~(Math.random() * param2) : ~~(Math.random() * param1) == 1;
+
+		};
+
+	}
+
 	/**
 	 * Псевдоним для document.getElementById
 	 * @param  {string} id айди элемента

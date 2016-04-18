@@ -303,7 +303,7 @@ define(["d", "Tile", "TileEffect", "monsters"], function(d, Tile, TileEffect, mo
 				// тут она может приходится на дверь
 				// так что дверь может быть по диагонали
 				do {
-					newWallSize = halfMaxWall + ~~(halfMaxWall / 2 - Math.random() * halfMaxWall);
+					newWallSize = ~~(halfMaxWall * 1.5) - rand(1, halfMaxWall);
 				} while (this.getTilePass(room.x + newWallSize, room.y - 1) || this.getTilePass(room.x + newWallSize, room.y + room.height));
 
 				// создаем две новые комнаты
@@ -331,7 +331,7 @@ define(["d", "Tile", "TileEffect", "monsters"], function(d, Tile, TileEffect, mo
 				}, this._wallType);
 
 				// рисуем дверь
-				doorCoord = ~~(Math.random() * room.height);
+				doorCoord = rand(1, room.height);
 				var t = this._setTile(room.x + newWallSize, room.y + doorCoord, this._doorType);
 				t.setEffect(new TileEffect("closed"));
 				newRoom1.doors.push([room.x + newWallSize, room.y + doorCoord]);
@@ -340,7 +340,7 @@ define(["d", "Tile", "TileEffect", "monsters"], function(d, Tile, TileEffect, mo
 			} else {
 
 				do {
-					newWallSize = halfMaxWall + ~~(halfMaxWall / 2 - Math.random() * halfMaxWall);
+					newWallSize = ~~(halfMaxWall * 1.5) - rand(1, halfMaxWall);
 				} while (this.getTilePass(room.x - 1, room.y + newWallSize) || this.getTilePass(room.x + room.width, room.y + newWallSize));
 
 				newRoom1 = {
@@ -363,7 +363,7 @@ define(["d", "Tile", "TileEffect", "monsters"], function(d, Tile, TileEffect, mo
 					width: room.width,
 					height: 1
 				}, this._wallType);
-				doorCoord = ~~(Math.random() * room.width);
+				doorCoord = rand(1, room.width);
 				var t = this._setTile(room.x + doorCoord, room.y + newWallSize, this._doorType);
 				t.setEffect(new TileEffect("closed"));
 				newRoom1.doors.push([room.x + doorCoord, room.y + newWallSize]);
@@ -388,8 +388,8 @@ define(["d", "Tile", "TileEffect", "monsters"], function(d, Tile, TileEffect, mo
 
 		// генерация лестницы вниз
 		do {
-			var dx = ~~(Math.random() * this._sizes.width),
-				dy = ~~(Math.random() * this._sizes.height);
+			var dx = rand(1, this._sizes.width - 1),
+				dy = rand(1, this._sizes.height - 1);
 		} while (this._map[dy][dx].type != this._floorType);
 
 		this._map[dy][dx] = new Tile(4);
@@ -423,11 +423,11 @@ define(["d", "Tile", "TileEffect", "monsters"], function(d, Tile, TileEffect, mo
 				var rx = room.doors[0][0],
 					ry = room.doors[0][1],
 					// будем ее скрывать или нет
-					hide = Math.random() * 100 < 20;
+					hide = rand(5);
 
 				if (hide) {
 
-					var power = 1 + ~~(Math.random() * 99),
+					var power = rand(1, 99),
 						// находится ли эта дверь на пути к выходу
 						onWay = way.some(function(t) {
 							return (t[0] == rx) && (t[1] == ry);
@@ -464,7 +464,7 @@ define(["d", "Tile", "TileEffect", "monsters"], function(d, Tile, TileEffect, mo
 
 		smallRooms.forEach(function(room) {
 
-			if (Math.random() * 100 < 40) {
+			if (rand(5)) {
 
 
 
