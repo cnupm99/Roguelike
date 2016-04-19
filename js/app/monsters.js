@@ -24,6 +24,10 @@ define(function() {
 				abilitys: {
 					infection: 1,
 					cowardice: 1
+				},
+				packSizes: {
+					min: 2,
+					max: 3
 				}
 			}
 		]

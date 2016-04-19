@@ -28,8 +28,17 @@ define(["d", "Tile", "TileEffect", "monsters"], function(d, Tile, TileEffect, mo
 		 *  2 - сложно
 		 *  3 - хардкор
 		 * @type {number}
+		 * @private
 		 */
 		this._difficult = options.difficult || 1;
+
+		/**
+		 * Уровень сложности уровня.
+		 * Число от 1 до ?
+		 * @type {number}
+		 * @private
+		 */
+		this._levelDifficult = options.levelDifficult || 1;
 
 		/**
 		 * Максимальная сила поиска игрока
@@ -460,13 +469,65 @@ define(["d", "Tile", "TileEffect", "monsters"], function(d, Tile, TileEffect, mo
 
 		// начинаем генерацию монстров
 
-		var m = monsters;
+		// рассчитаем вероятность появления пака монстров в данной комнате
+		// в зависимости от сложности игры
+		var packChance = 5 - this._difficult;
 
 		smallRooms.forEach(function(room) {
 
-			if (rand(5)) {
+			// добаляем пак, если нужно
+			if (rand(packChance)) {
 
+				// уровень пака
+				var packLevel,
+					ld = this._levelDifficult;
+				// рассчитываем уровень пака в зависимости от сложности игры
+				// и сложности уровня
+				switch (this._difficult) {
+					case 0:
+						packLevel = ld;
+						break;
+					case 1:
+						packLevel = rand(ld - 1, ld + 1);
+						break;
+					case 2:
+						packLevel = rand(ld - 2, ld + 3);
+						break;
+					case 3:
+						packLevel = rand(ld - 2, ld + 5);
+						break;
+				}
 
+				// ограничения по уровню
+				if (packLevel < 0) packLevel = 0;
+				if (packLevel >= monsters.length) packLevel = monsters.length - 1;
+
+				// тип монстров в паке
+				var monsterType = rand(0, monsters[packLevel].length - 1),
+					// количество монстров в паке {min, max}
+					packSizes = {
+						min: monsters[packLevel][monsterType].packSizes.min,
+						max: monsters[packLevel][monsterType].packSizes.max
+					}
+
+				// корректируем размеры пака в зависимости от сложности игры
+				switch (this._difficult) {
+					case 1:
+						packSizes.min += 1;
+						packSizes.max += 2;
+						break;
+					case 2:
+						packSizes.min += 2;
+						packSizes.max += 5;
+						break;
+					case 3:
+						packSizes.min += 3;
+						packSizes.max += 9;
+						break;
+				}
+
+				// итоговый размер пака
+				var packSize = rand(packSizes.min, packSizes.max);
 
 			}
 
