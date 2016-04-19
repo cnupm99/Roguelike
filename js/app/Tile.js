@@ -115,7 +115,7 @@ define(["screenObject", "TileEffect"], function(screenObject, TileEffect) {
 	Tile.prototype.checkHidden = function(discover) {
 
 		var bonus = 0,
-			check = ~~(Math.random() * 1000),
+			check = rand(1, 1000),
 			hiddenPower = 0;
 
 		// рассчитываем случайный бонус к открытию
