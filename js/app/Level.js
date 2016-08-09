@@ -1,6 +1,6 @@
 "use strict";
 
-define(["d", "Tile", "TileEffect", "monsters"], function(d, Tile, TileEffect, monsters) {
+define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, TileEffect, monsters, Monster) {
 
 	/**
 	 * Новый уровень
@@ -528,6 +528,22 @@ define(["d", "Tile", "TileEffect", "monsters"], function(d, Tile, TileEffect, mo
 
 				// итоговый размер пака
 				var packSize = rand(packSizes.min, packSizes.max);
+
+				for (var i = 0; i < packSize; i++) {
+
+					do {
+
+						var mx = rand(room.x, room.width + room.x),
+							my = rand(room.y, room.height + room.y);
+
+					} while (!getTilePass(mx, my));
+
+					var monster = new Monster(packLevel, monsterType, mx, my);
+
+					this._map[my][mx].child = monster;
+					this._map[my][mx].contains = true;
+
+				}
 
 			}
 
