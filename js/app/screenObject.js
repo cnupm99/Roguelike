@@ -25,19 +25,19 @@ define(function() {
 		 * @type {String}
 		 * @private
 		 */
-		this._represent = "#";
+		this._represent = "";
 		/**
 		 * Цвет видимого тайла
 		 * @type {String}
 		 * @private
 		 */
-		this._visibleColor = "#FFF";
+		this._visibleColor = "";
 		/**
 		 * Цвет тайла в памяти
 		 * @type {String}
 		 * @private
 		 */
-		this._inMindColor = "#222";
+		this._inMindColor = "";
 		/**
 		 * Проходимость тайла
 		 * @type {Boolean}
@@ -61,7 +61,19 @@ define(function() {
 		 * @type {Number}
 		 * public
 		 */
-		this.desc = 2;
+		this._description = 0;
+		/**
+		 * содержит ли тайл что-то на себе
+		 * @type {Boolean}
+		 * @public
+		 */
+		this.contains = false;
+		/**
+		 * содержание тайла (дочерний объект)
+		 * @type {Object|null}
+		 * @public
+		 */
+		this.child = null;
 
 	}
 
@@ -75,11 +87,15 @@ define(function() {
 	screenObject.prototype.setEffect = function(effect) {
 
 		if (!this.effects.some(function(e) {
+				
 				return e.effectName == effect.effectName;
+
 			})) {
+			
 			this.effects.push(effect);
 			this.needAnimation = true;
 			return true;
+
 		} else return false;
 
 	};
@@ -98,9 +114,11 @@ define(function() {
 		this.effects.forEach(function(effect, i) {
 
 			if (effect.effectName == effectName) {
+				
 				result = true;
 				this.effects.splice(i, 1);
 				if (this.effects.length == 0) this.needAnimation = false;
+
 			}
 
 		}, this);
@@ -206,10 +224,10 @@ define(function() {
 	 * @return {string} описание тайла
 	 * @public
 	 */
-	screenObject.prototype.getDesc = function() {
+	screenObject.prototype.getDesc = function(smallDesc) {
 
-		var desc = this.visible ? lang.tiles[0] : lang.tiles[1],
-			d = this.desc,
+		var desc = smallDesc ? "" : this.visible ? lang.log[23] : lang.log[24],
+			d = this._description,
 			z = 0;
 
 		// эффекты, меняющие описание
@@ -224,7 +242,7 @@ define(function() {
 
 		});
 
-		desc += lang.tiles[d];
+		desc += d;
 
 		// вычисляем количество видимых эффектов
 		var visibleEffects = 0;
@@ -234,11 +252,11 @@ define(function() {
 		if (visibleEffects == 0) return desc;
 
 		// добавляем описания видимых эффектов
-		desc += "; " + lang.tiles[2] + ": ";
+		desc += "; " + lang.log[25] + ": ";
 		this.effects.forEach(function(effect) {
 
 			if (effect.visible) {
-				desc += effect.effectName + "; ";
+				desc += effect.effectDesc + "; ";
 			}
 
 		});
@@ -269,6 +287,41 @@ define(function() {
 		});
 
 		return pass;
+
+	};
+
+	/**
+	 * Проверяем, не откроется ли скрытый объект
+	 * @param  {number} discover уровень поиска героя
+	 * @return {boolean}          true, если поиск успешен, иначе false
+	 */
+	screenObject.prototype.checkHidden = function(discover) {
+
+		var bonus = 0,
+			check = rand(1, 1000),
+			hiddenPower = 0;
+
+		// рассчитываем случайный бонус к открытию
+		if (check == 1) {
+			bonus = 20;
+		} else if (check < 10) {
+			bonus = 10;
+		} else if (check < 100) {
+			bonus = 5;
+		}
+
+		// мощность скрытия
+		this.effects.forEach(function(effect) {
+			if (effect.effectName == "hidden") hiddenPower = effect.hiddenPower;
+		});
+
+		if (discover + bonus >= hiddenPower) {
+
+			// убираем эффект скрытия
+			this.removeEffect("hidden");
+			return true;
+
+		} else return false;
 
 	};
 

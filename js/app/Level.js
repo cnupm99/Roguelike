@@ -4,7 +4,7 @@ define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, Til
 
 	/**
 	 * Новый уровень
-	 * @param {number} type тип уровня
+	 * @param {object} options опции уровня
 	 * @constructor
 	 */
 	function Level(options) {
@@ -13,13 +13,13 @@ define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, Til
 
 		/**
 		 * тип уровня
-		 * @type {number}
+		 * @type {string}
 		 * возможные значения:
-		 *  0 - тестовый уровень
-		 *  1 - уровень из комнат (кирпичные стены и пол)
+		 *  "test" - тестовый уровень
+		 *  "rooms" - уровень из комнат (кирпичные стены и пол)
 		 * @private
 		 */
-		this._type = options.type || 0;
+		this._type = options.type || "test";
 
 		/**
 		 * Уровень сложности
@@ -88,6 +88,13 @@ define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, Til
 		}
 
 		/**
+		 * Список монстров на уровне
+		 * @type {Array}
+		 * @private
+		 */
+		this._monsters = [];
+
+		/**
 		 * Массив элементов span для отображения информации на экране
 		 * @type {Array}
 		 */
@@ -107,47 +114,18 @@ define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, Til
 			d("main").add("br");
 		}
 
-		// генерация уровня в зависимости от его типа
-		switch (this._type) {
-			case 0:
-				/**
-				 * Тип стен
-				 * @type {Number}
-				 * @private
-				 */
-				this._wallType = 1;
-				/**
-				 * Тип пола
-				 * @type {Number}
-				 * @private
-				 */
-				this._floorType = 2;
-				/**
-				 * Тайл дверей
-				 * @type {Number}
-				 */
-				this._doorType = 3;
-				/**
-				 * Тайл выхода с уровня
-				 * @type {Number}
-				 */
-				this._outType = 4;
-				this._generateRoomsMaze();
-				break;
-			case 1:
-				this._wallType = 1;
-				this._floorType = 2;
-				this._doorType = 3;
-				this._outType = 4;
-				this._generateRoomsMaze();
-				break;
-		}
+		this._wallType = levels[this._type][0];
+		this._floorType = levels[this._type][1];
+		this._doorType = levels[this._type][2];
+		this._outType = levels[this._type][3];
+
+		this._generateRoomsMaze();
 
 		/**
 		 * Нужна ли анимация уровня
 		 * @type {Boolean}
 		 */
-		this._needAnimation = true;
+		// this._needAnimation = true;
 		/**
 		 * Скорость анимации
 		 * @type {Number}
@@ -160,6 +138,11 @@ define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, Til
 		d("main").addEventListener("mouseover", this._mouseover.bind(this));
 		d("main").addEventListener("mouseout", this._mouseout);
 
+	}
+
+	var levels = {
+		"test": ["stone wall", "stone floor", "door", "stairs down"],
+		"rooms": ["stone wall", "stone floor", "door", "stairs down"]
 	}
 
 	/**
@@ -229,14 +212,10 @@ define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, Til
 				t.effects.forEach(function(effect, i) {
 
 					effect.moves++;
-					if (effect.moves == effect.duration) {
-
-						t.effects.splice(i, 1);
-						if (t.effects.length == 0) t.needAnimation = false;
-
-					}
+					if (effect.moves == effect.duration) t.effects.splice(i, 1);
 
 				});
+				if (t.effects.length == 0) t.needAnimation = false;
 			}
 		}
 
@@ -399,9 +378,9 @@ define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, Til
 		do {
 			var dx = rand(1, this._sizes.width - 1),
 				dy = rand(1, this._sizes.height - 1);
-		} while (this._map[dy][dx].type != this._floorType);
+		} while (this._map[dy][dx].tileName != this._floorType);
 
-		this._map[dy][dx] = new Tile(4);
+		this._map[dy][dx] = new Tile(this._outType);
 
 		// путь до выхода
 		var way = this._findPath(this._position.x, this._position.y, dx, dy),
@@ -476,7 +455,8 @@ define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, Til
 		smallRooms.forEach(function(room) {
 
 			// добаляем пак, если нужно
-			if (rand(packChance)) {
+			if (true) {
+				// if (rand(packChance)) {
 
 				// уровень пака
 				var packLevel,
@@ -529,19 +509,22 @@ define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, Til
 				// итоговый размер пака
 				var packSize = rand(packSizes.min, packSizes.max);
 
+				// добавление монстров на карту
 				for (var i = 0; i < packSize; i++) {
 
 					do {
 
-						var mx = rand(room.x, room.width + room.x),
-							my = rand(room.y, room.height + room.y);
+						var mx = rand(room.x, room.width + room.x - 1),
+							my = rand(room.y, room.height + room.y - 1);
 
-					} while (!getTilePass(mx, my));
+					} while (!this.getTilePass(mx, my));
 
 					var monster = new Monster(packLevel, monsterType, mx, my);
 
 					this._map[my][mx].child = monster;
 					this._map[my][mx].contains = true;
+
+					this._monsters.push(monster);
 
 				}
 
@@ -561,18 +544,18 @@ define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, Til
 	 */
 	Level.prototype._setTile = function(arg1, arg2, arg3) {
 
-		var x, y, type;
+		var x, y, tileName;
 		if (typeof(arg1) == "Object") {
 			x = arg1.x || arg1.x0 || arg1.left || 0;
 			y = arg1.y || arg1.y0 || arg1.top || 0;
-			type = arg2;
+			tileName = arg2;
 		} else {
 			x = arg1;
 			y = arg2;
-			type = arg3;
+			tileName = arg3;
 		}
 
-		var t = new Tile(type);
+		var t = new Tile(tileName);
 		this._map[y][x] = t;
 		return t;
 
@@ -588,7 +571,7 @@ define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, Til
 
 		var t = this._map[dy][dx];
 
-		if (t.type != this._doorType) return false;
+		if (t.tileName != this._doorType) return false;
 
 		return t.openDoor();
 
@@ -616,7 +599,7 @@ define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, Til
 			for (var g = minX; g <= maxX; g++) {
 
 				var t = this._map[i][g];
-				if (t.type == this._doorType) {
+				if (t.tileName == this._doorType) {
 					if (t.closeDoor()) flag++;
 				}
 
@@ -639,7 +622,7 @@ define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, Til
 	 * }
 	 * @private
 	 */
-	Level.prototype._fillRect = function(rect, type) {
+	Level.prototype._fillRect = function(rect, tileName) {
 
 		// вычисляем параметры области
 		var x0 = rect.x0 ? rect.x0 : rect.left ? rect.left : rect.x ? rect.x : 0,
@@ -650,7 +633,7 @@ define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, Til
 		// заполнение тайлами
 		for (var i = y0; i < y1; i++) {
 			for (var g = x0; g < x1; g++) {
-				this._setTile(g, i, type);
+				this._setTile(g, i, tileName);
 			}
 		}
 
@@ -722,7 +705,7 @@ define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, Til
 
 					if (!flag) continue;
 
-					flag = type ? (pathes[i][g] == 0) && (this._map[i][g].type != this._wallType) : (pathes[i][g] + 1 == pathes[dy][dx]);
+					flag = type ? (pathes[i][g] == 0) && (this._map[i][g].tileName != this._wallType) : (pathes[i][g] + 1 == pathes[dy][dx]);
 
 					if (flag) return [g, i];
 
@@ -885,6 +868,7 @@ define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, Til
 					t = this._map[i][g];
 
 				t.visible = false;
+				if (t.contains) t.child.visible = false;
 
 				if (checkSide) {
 
@@ -960,7 +944,24 @@ define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, Til
 
 					// пробуем ее обнаружить
 					if (t.checkHidden(discover)) {
-						logFunc(lang.log[21] + lang.tiles[t.desc], 2);
+						logFunc(lang.log[21] + t.getDesc(true), 2);
+					}
+
+				}
+
+				// на тайле что-то есть
+				if ((t.visible) && (t.contains)) {
+
+					// мы это видим
+					t.child.inMind = true;
+					t.child.visible = true;
+
+					// с учетом эффектов размера и тени
+					if (shadow) {
+
+						if (t.child.size == 0) t.child.visible = false
+						else t.child.setEffect(new TileEffect("shadow"));
+
 					}
 
 				}
@@ -1034,7 +1035,7 @@ define(["d", "Tile", "TileEffect", "monsters", "Monster"], function(d, Tile, Til
 	 */
 	Level.prototype.stepDown = function() {
 
-		return this._map[this._position.y][this._position.x].type == this._outType;
+		return this._map[this._position.y][this._position.x].tileName == this._outType;
 
 	};
 

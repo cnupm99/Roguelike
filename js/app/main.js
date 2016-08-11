@@ -16,7 +16,7 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 	var loader = new ResLoader();
 	window.lang = {};
 
-	var h = new Hero(),
+	var h,
 		l,
 		animation;
 
@@ -34,6 +34,8 @@ define(["d", "Level", "Hero", "ResLoader"], function(d, Level, Hero, ResLoader) 
 		document.body.addEventListener("keypress", onKeyPress);
 		// document.body.addEventListener("click", onMouseClick);
 		d("main").addEventListener("click", onMouseClick);
+
+		h = new Hero();
 
 		newLevel();
 		// l.setHeroPosition(h);

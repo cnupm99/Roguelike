@@ -65,7 +65,7 @@ define(function() {
 		 */
 		window.rand = function(param1, param2) {
 
-			return param2 ? param1 + ~~(Math.random() * param2) : ~~(Math.random() * param1) == 1;
+			return param2 !== null ? param1 + ~~(Math.random() * (param2 - param1)) : ~~(Math.random() * param1) == 1;
 
 		};
 

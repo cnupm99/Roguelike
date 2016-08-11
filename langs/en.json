@@ -22,17 +22,25 @@
 		"no doors to close around",
 		"you wait something...",
 		"you discover: ",
-		"you descended down the stairs"
-	],
-	"tiles": [
+		"you descended down the stairs",
 		"you see ",
 		"you remember ",
-		"effects",
+		"effects"
+	],
+	"tiles": [
 		"stone wall",
 		"stone floor",
 		"door",
 		"opened door",
-		"yourself",
 		"stairs down"
+	],
+	"monsters": [
+		"yourself",
+		"rat"
+	],
+	"effects": [
+		"shadow",
+		"hidden",
+		"closed"
 	]
 }

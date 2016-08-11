@@ -10,6 +10,7 @@ define(["screenObject", "monsters"], function(screenObject, monsters) {
 
 		this._represent = info.represent;
 		this._visibleColor = info.color;
+		this._inMindColor = "#222";
 
 		this.position = {
 			x: mx,
@@ -22,7 +23,8 @@ define(["screenObject", "monsters"], function(screenObject, monsters) {
 		this._int = info.params.int;
 		this._wis = info.params.wis;
 		this._cha = info.params.cha;
-		this._size = info.size;
+		this.size = info.size;
+		this._description = lang.monsters[info.desc];
 
 	}
 

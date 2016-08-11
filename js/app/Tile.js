@@ -7,69 +7,20 @@ define(["screenObject", "TileEffect"], function(screenObject, TileEffect) {
 	 * @param {number} type тип тайла
 	 * @constructor
 	 */
-	function Tile(type) {
+	function Tile(tileName) {
 
 		// конструктор родителя
 		screenObject.apply(this, arguments);
 
-		/**
-		 * Тип тайла
-		 * @type {number}
-		 *  1 - простая кирпичная стена
-		 *  2 - простой кирпичный пол
-		 *  3 - простая каменная дверь
-		 *  4 - лестница вниз
-		 * @public
-		 */
-		this.type = type;
+		// название тайла
+		this.tileName = tileName;
 
-		/**
-		 * содержит ли тайл что-то на себе
-		 * @type {Boolean}
-		 * @public
-		 */
-		this.contains = false;
-		/**
-		 * содержание тайла (дочерний объект)
-		 * @type {Object|null}
-		 * @public
-		 */
-		this.child = null;
-
-		switch (this.type) {
-			// каменная стена
-			case 1:
-				this._represent = "#";
-				this._visibleColor = "#FFF";
-				this._inMindColor = "#222";
-				this._passability = false;
-				this.desc = 3;
-				break;
-				// каменный пол
-			case 2:
-				this._represent = ".";
-				this._visibleColor = "#FFF";
-				this._inMindColor = "#222";
-				this._passability = true;
-				this.desc = 4;
-				break;
-				// каменная дверь
-			case 3:
-				this._represent = "`";
-				this._visibleColor = "#0F0";
-				this._inMindColor = "#222";
-				this._passability = true;
-				this.desc = 5;
-				break;
-				// лестница вниз
-			case 4:
-				this._represent = ">";
-				this._visibleColor = "#FFF";
-				this._inMindColor = "#222";
-				this._passability = true;
-				this.desc = 8;
-				break;
-		}
+		// задаем свойства тайла по его имени
+		this._represent = Tiles[tileName][0];
+		this._visibleColor = Tiles[tileName][1];
+		this._inMindColor = Tiles[tileName][2];
+		this._passability = Tiles[tileName][3];
+		this._description = lang.tiles[Tiles[tileName][4]];
 
 	}
 
@@ -77,6 +28,10 @@ define(["screenObject", "TileEffect"], function(screenObject, TileEffect) {
 	Tile.prototype = Object.create(screenObject.prototype);
 	Tile.prototype.constructor = Tile;
 
+	/**
+	 * Установить текстовое отображение тайла
+	 * @param {string} represent новое текстовое отображение
+	 */
 	Tile.prototype.setRepresent = function(represent) {
 
 		this._represent = represent;
@@ -108,38 +63,14 @@ define(["screenObject", "TileEffect"], function(screenObject, TileEffect) {
 	};
 
 	/**
-	 * Проверяем, не откроется ли скрытый объект
-	 * @param  {number} discover уровень поиска героя
-	 * @return {boolean}          true, если поиск успешен, иначе false
+	 * Список тайлов
+	 * @type {Object}
 	 */
-	Tile.prototype.checkHidden = function(discover) {
-
-		var bonus = 0,
-			check = rand(1, 1000),
-			hiddenPower = 0;
-
-		// рассчитываем случайный бонус к открытию
-		if (check == 1) {
-			bonus = 20;
-		} else if (check < 10) {
-			bonus = 10;
-		} else if (check < 100) {
-			bonus = 5;
-		}
-
-		// мощность скрытия
-		this.effects.forEach(function(effect) {
-			if (effect.effectName == "hidden") hiddenPower = effect.hiddenPower;
-		});
-
-		if (discover + bonus >= hiddenPower) {
-
-			// убираем эффект скрытия
-			this.removeEffect("hidden");
-			return true;
-
-		} else return false;
-
+	var Tiles = {
+		"stone wall": ["#", "#FFF", "#222", false, 0],
+		"stone floor": [".", "#FFF", "#222", true, 1],
+		"door": ["`", "#0F0", "#222", true, 3],
+		"stairs down": [">", "#FFF", "#222", true, 4],
 	};
 
 	return Tile;

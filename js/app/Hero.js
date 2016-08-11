@@ -19,7 +19,7 @@ define(["screenObject"], function(screenObject) {
 		this.overview = 10;
 		this.shadow = 20;
 		this.side = 3;
-		this.desc = 7;
+		this._description = lang.monsters[0];
 
 		this.wisdom = 18;
 

@@ -21,6 +21,7 @@ define(function() {
 					cha: 1
 				},
 				size: 0,
+				desc: 1,
 				abilitys: {
 					infection: 1,
 					cowardice: 1

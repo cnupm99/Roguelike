@@ -57,6 +57,7 @@ define(function() {
 				 * @type {Boolean}
 				 */
 				this.visible = true;
+				this.effectDesc = lang.effects[0];
 				break;
 			// эффект скрытности
 			case "hidden":
@@ -79,12 +80,15 @@ define(function() {
 				 */
 				this.desc = options.desc || 3;
 				this.z = 9;
+				this.effectDesc = lang.effects[1];
 				break;
 			case "closed":
 				this.duration = -1;
 				this.visible = true;
 				this.passability = false;
 				this.represent = "+";
+				this.desc = lang.tiles[2];
+				this.effectDesc = lang.effects[2];
 				this.z = 9;
 				break;
 		}
